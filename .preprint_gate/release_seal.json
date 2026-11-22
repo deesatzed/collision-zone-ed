@@ -1,8 +1,8 @@
 {
   "status": "SEALED_FOR_SUBMISSION",
   "reverified": true,
-  "seal_id": "e7dbe50fa705fb51ce1b5a66",
-  "target_server": "arxiv",
+  "seal_id": "93bfcf716613e9e592589a8e",
+  "target_server": "medrxiv",
   "manuscript_dir": "/Users/o2satz/antigravity/collision_zone_ed/manuscript",
   "manuscript_file": null,
   "manuscript_sha256": "46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10",
@@ -15,6 +15,6 @@
   },
   "pass1_audit_sha256": "46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10",
   "blind_review_sha256": "46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10",
-  "blind_review_recorded_at": "2026-11-22T22:13:16.563284+00:00",
-  "sealed_at": "2026-11-22T22:14:03.541470+00:00"
+  "blind_review_recorded_at": "2026-11-22T23:39:44.051568+00:00",
+  "sealed_at": "2026-11-22T23:40:21.034243+00:00"
 }

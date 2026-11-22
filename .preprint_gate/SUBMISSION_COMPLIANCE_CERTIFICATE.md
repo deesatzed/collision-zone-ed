@@ -1,18 +1,18 @@
 # Preprint Submission Compliance Certificate
 
 - **Status**: `SEALED_FOR_SUBMISSION`
-- **Seal ID**: `e7dbe50fa705fb51ce1b5a66`
-- **Target Preprint Server**: `arxiv`
+- **Seal ID**: `93bfcf716613e9e592589a8e`
+- **Target Preprint Server**: `medrxiv`
 - **Manuscript Merkle SHA-256**: `46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10`
 - **Blind Review Attestation SHA-256**: `46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10`
-- **Sealed Timestamp (UTC)**: `2026-11-22T22:14:03.541470+00:00`
+- **Sealed Timestamp (UTC)**: `2026-11-22T23:40:21.034243+00:00`
 
 ## Verified Hard Gates
 
 1. `G1_AI_ATTRIBUTION`: PASS (Human authorship only, AI workflow disclosure, Google Science program acknowledgment)
 2. `G2_SKILL_LICENSES`: PASS (All detected Science Plugin third-party databases/tools cited per `SKILL_LICENSES.md`)
 3. `G3_CITATIONS`: PASS (Identifiers resolved and title-verified; zero placeholders)
-4. `G4_SERVER_SCREENING`: PASS (`arxiv` screening & ethics/clinical safety profile)
+4. `G4_SERVER_SCREENING`: PASS (`medrxiv` screening & ethics/clinical safety profile)
 5. `G5_CLAIM_GROUNDING`: PASS (Computational vs. experimental claim framing verified)
 6. `G6_REVERIFICATION_SEAL`: PASS (Two-pass audit + fresh-context blind review SHA-256 lock)
 
