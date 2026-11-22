@@ -1,0 +1,31 @@
+# Python environments & caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Raw clinical datasets (never commit EHR/benchmark archives)
+data/
+*.parquet
+*.csv
+*.psv
+*.RData
+*.rds
+*.zip
+
+# LaTeX build intermediates (keep sealed main.tex, references.bib, main.pdf, figures)
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.log
+manuscript/*.out
+manuscript/*.fls
+manuscript/*.fdb_latexmk
+manuscript/.preprint_gate/
+
+# macOS metadata
+.DS_Store

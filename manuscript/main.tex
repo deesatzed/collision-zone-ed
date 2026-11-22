@@ -1,0 +1,475 @@
+\documentclass[11pt]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+\fi
+\usepackage[margin=0.95in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{microtype}
+\usepackage{array}
+\usepackage{multirow}
+\emergencystretch=3em
+\hbadness=2000
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+
+\title{\textbf{Rescuing Diagnostic Signal from True-Negative Abundance: High-Signal False Positives, Collision-Zone Feature Acquisition, and KL-Gated Residual Learning in Acute Care}}
+
+\author{
+  Wayne A. Satz, MD$^*$\\
+  \small Department of Emergency Medicine, Lewis Katz School of Medicine at Temple University,\\
+  \small Philadelphia, PA 19140, USA\\
+  \small $^*$Correspondence: \texttt{satzwa@temple.edu}
+}
+
+\date{November 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Acute-care risk models face extreme true-negative abundance: 90\%--98\% of arrivals are routine discharges far below clinical action thresholds $\tau^*$. Evaluating diagnostic channels via global conditional mutual information (log-loss) weights thresholds by $w_{\log}(\tau) = [\tau(1-\tau)]^{-1} \to \infty$ as $\tau \to 0^+$, diverting power toward subthreshold risk shifts while missing tie-breakers that separate rare True Positives from look-alike High-Signal False Positives near $\tau^*$. Conversely, naive row downweighting collapses effective sample size and starves decision-tree leaves. We resolve both failures via three predicates: (1) a closed-form strictly proper Schervish Beta-kernel score $S_{\tau^*,\kappa}(y,p)$ peaking at $\tau^*$ with $w_{\tau^*,\kappa}(0)=0$; (2) High-Signal False Positive constrained Neyman two-phase pilot sampling with adaptive focus and Holm stopping; and (3) KL-Gated Residual Modulation, combining a 100\%-sample global backbone with a bottlenecked union-KL-gated specialist under unweighted Bernoulli likelihood so starved leaves shrink back to the global Stage-2 model rather than zero, paired with nonparametric empirical martingale Value-of-Information (VOI) routing. Under synthetic dilution ($30$ reps), collision-zone discovery lifts tie-breaker recovery from $13.3\%$ to $93.3\%$ ($3.3\%$ null FWER) and Auto-VOI Net Benefit from $-0.36$ to $+1.73$. Across $600{,}154$ encounters from five hospitals (PhysioNet 2019 sepsis; Yale ED), dual-track parity and hardened audits yield zero-shot external transfer gains from Beth Israel to Emory ($+2.08$ vs.\ $+0.97$ parity; $+1.51$ paired bootstrap gain, $p=0.006$, on measured CPT-costed blood draws), cross-campus Yale ED gains across $166{,}497$ visits ($+0.40$ vs.\ global CMI, $p=0.030$), and positive Net Benefit gains ($\Delta\text{NB}>0$) across all $11/11$ fairness-blinded subgroups.
+\end{abstract}
+
+\vspace{4pt}
+\noindent\textbf{Keywords:} Proper scoring rules; two-phase stratified sampling; active feature acquisition; gradient-boosted decision trees; Value of Information; clinical decision analysis; emergency medicine; sepsis.
+
+\section{Introduction}
+\label{sec:intro}
+
+Acute-care clinical risk prediction---such as early sepsis detection in emergency and intensive care units \citep{singer2016sepsis3,reyna2020early} and occult inpatient admission triage among low-acuity emergency department (ED) arrivals \citep{hong2018predicting}---operates under extreme true-negative abundance. In fast-track low-acuity ED cohorts (Emergency Severity Index [ESI] levels 4 and 5), more than $98\%$ of patients are safely discharged without inpatient admission; in early hospital sepsis screening, over $92\%\text{--}95\%$ of arrivals remain sepsis-free. Faced with class imbalance, practitioners frequently apply synthetic oversampling or class reweighting on fixed baseline features \citep{chawla2002smote}, even though monotone prior shifts leave population ranking curves invariant while distorting probability calibration and clinical Net Benefit \citep{elkan2001foundations,saerens2002adjusting,vancalster2019calibration,vandengoorbergh2022harm}.
+
+When baseline intake covariates $X_{\text{base}}$ (triage vitals, age, arrival mode, chief complaints) leave genuine uncertainty around the clinical decision threshold $\tau^* = C_{\text{FP}} / (C_{\text{FP}} + C_{\text{FN}})$ \citep{vickers2006decision}, resolving risk requires acquiring additional Stage-2 diagnostic channels $Z_1, \dots, Z_M$ (quantitative laboratory assays or historical Health Information Exchange [HIE] records) under explicit pilot discovery and deployment budgets \citep{saartsechansky2009active,covert2023learning,vonkleist2025evaluation}. However, extending global two-phase conditional mutual information (CMI) discovery and active acquisition to severe acute-care imbalance exposes a fundamental statistical mismatch governed by three information predicates:
+\begin{enumerate}
+  \item \textbf{Predicate 1 --- Eliminating the True-Negative Singularity in Latent-Space Information Gaps:} By Schervish's integral representation of proper scoring rules \citep{schervish1989general,gneiting2007strictly}, standard log-loss (conditional mutual information) averages cost-weighted threshold losses with density $w_{\log}(\tau) = [\tau(1-\tau)]^{-1} \to +\infty$ as $\tau \to 0^+$. Under $94\%\text{--}98\%$ true-negative abundance, log-loss devotes disproportionate curvature weight to distinguishing $0.1\%$-risk from $0.5\%$-risk benign presentations far below $\tau^*$, allowing subthreshold decoy channels to outscore surgical tie-breaker diagnostics needed at $\tau^*$.
+  \item \textbf{Predicate 2 --- Exploiting High-Signal False Positives in Two-Phase Pilots:} Beyond rare True Positives ($Y=1$), the most informative historical controls for discovering what baseline intake misses are \emph{High-Signal False Positives}---non-events ($Y=0$) whose intake risk $\hat{p}_1(X_{\text{base}})$ collides with True Positives near $\tau^*$ (e.g., pain- or dehydration-induced tachycardia mimicking early sepsis). Standard stratified designs allocate excess pilot capacity to easy True Negatives rather than concentrating controls in this collision zone \citep{horvitz1952generalization,breslow2009using,lumley2010complex,tao2020optimal}.
+  \item \textbf{Predicate 3 --- Rescuing Signal Lost in True-Negative Abundance Without GBDT Leaf Starvation:} Evaluating or training Stage-2 gradient-boosted decision trees (GBDTs; \citealp{ke2017lightgbm}) globally across all arrivals allows majority-region variance to hijack finite tree capacity. Yet naively downweighting $90\%+$ of non-collision training rows inside a single GBDT creates an acute bias--variance contradiction: collapsing Kish effective sample size starves tree leaves, degrading universal physiological main effects (e.g., hyperlactatemia) and causing specialist rules learned near $\tau^*$ to spill over onto subthreshold patients at test time.
+\end{enumerate}
+
+\subsection{Contributions}
+
+This paper develops and validates a complete statistical framework---implemented in the open-source \texttt{collision-zone-ed} package---that operationalizes all three predicates while addressing the primary biostatistical and clinical-informatics pitfalls of retrospective electronic health record (EHR) benchmarking \citep{agniel2018biases,obermeyer2019dissecting,collins2024tripodai}:
+\begin{itemize}
+  \item \textbf{Schervish Beta-Kernel Discovery and High-Signal False Positive Neyman Pilots (Section~\ref{sec:pred12}, Theorems~\ref{thm:schervish}--\ref{thm:hsfp_neyman}):} We introduce the closed-form strictly proper scoring rule $S_{\tau^*,\kappa}(y,p)$ induced by a $\operatorname{Beta}(1+\kappa\tau^*, 1+\kappa(1-\tau^*))$ threshold kernel, prove exact elimination of the $\tau \to 0^+$ singularity while preserving strict properness on $(0,1)$, derive its first-order Taylor dispersion for High-Signal False Positive constrained Neyman sampling, and incorporate adaptive active-mass focus $\kappa_{\text{disc}}^*$ with two-phase variance ($V_{\text{I}} + V_{\text{II}}$) and Holm lower-confidence-bound (LCB) stopping \citep{holm1979simple,williamson2021nonparametric}.
+  \item \textbf{KL-Gated Residual Modulation to Eliminate GBDT Leaf Starvation (Section~\ref{sec:fluid}, Proposition~\ref{prop:fluid}):} Rather than reweighting rows inside one tree ensemble, we parameterize Stage-2 log-odds as a $100\%$-sample global backbone plus a bottlenecked collision residual modulated by a smooth probabilistic-OR Bernoulli KL gate $\pi_{\text{union}}(x,z) \in (0,1]$, fit under unweighted canonical Bernoulli maximum likelihood with monotone active-Hessian-mass bisection ($\kappa^*$) and out-of-fold Schervish Empirical-Bayes stacking \citep{wolpert1992stacked,vanderlaan2007super}. We prove strict convexity, exact Bayes posterior invariance, and smooth fallback of starved leaves to the global Stage-2 backbone rather than Stage-1.
+  \item \textbf{Nonparametric Empirical Martingale VOI and Informative-Ordering De-Confounding (Section~\ref{sec:voi_agniel}, Proposition~\ref{prop:emp_voi_agniel}):} We replace parametric Logit-Normal VOI quadrature with distribution-free empirical conditional martingale VOI preserving skewed laboratory spikes, and introduce \texttt{AgnielDeconfounder}, proving exact conditional independence $\tilde{Z} \perp Y \mid X_{\text{base}}$ under arbitrary clinician-ordering confounding ($D \to Y$) when assay values carry no conditional biological signal \citep{agniel2018biases}.
+  \item \textbf{Dual-Track Multi-Hospital Clinical Evaluation Across $600{,}154$ Encounters (Sections~\ref{sec:study_design}--\ref{sec:results}):} Alongside synthetic dilution and leaf-starvation audits, we evaluate two multi-hospital acute-care benchmarks---PhysioNet/CinC 2019 sepsis (\citealp{goldberger2000physionet,reyna2020early}; Beth Israel Deaconess $\to$ Emory zero-shot external transfer) and Yale New Haven Health System ED triage (\citealp{hong2018predicting}; $560{,}486$ visits across three campuses including $152{,}995$ low-acuity ESI 4--5 visits)---under both \emph{Track A (Published Comparator Parity)} and \emph{Track B (Hardened De-Confounded, CMS CPT-Costed, Fairness-Blinded, and Cross-Campus External Transfer)} with $1{,}000$-replicate patient-level paired bootstrap inference, full Vickers Decision Curves \citep{vickers2006decision}, Conformal Benjamini--Hochberg (\texttt{CfBH}) FDR selection \citep{jin2023selection}, and an $11$-subgroup algorithmic fairness audit.
+\end{itemize}
+
+\section{Statistical Theory and Methodology}
+\label{sec:methods}
+
+Let $(X_{\text{base}}, Z_1, \dots, Z_M, Y) \sim \mathbb{P}$ denote an acute-care encounter with zero-marginal-cost intake covariates $X_{\text{base}} \in \mathcal{X}$, $M$ candidate Stage-2 diagnostic or HIE channels $Z_m \in \mathcal{Z}_m$ with unit acquisition costs $c_m > 0$ (discovery budget $\sum_{m \in \mathcal{S}} c_m \le B$), and binary clinical outcome $Y \in \{0,1\}$. An operational decision contract $\mathcal{K} = (C_{\text{FP}}, C_{\text{FN}}, q_{\text{target}}, c_{\text{query}})$ defines the Bayes action threshold $\tau^* = C_{\text{FP}} / (C_{\text{FP}} + C_{\text{FN}}) \in (0, 1)$, target alert precision $q_{\text{target}}$ ($\text{FDR}_{\text{target}} = 1 - q_{\text{target}}$), and per-encounter deployment query cost $c_{\text{query}} \ge 0$ in units of $C_{\text{FP}}$. Following \citet{vickers2006decision}, deployment Net Benefit per $1{,}000$ arrivals for routed probabilities $\hat{p}_{\text{route},i}$ and query indicators $Q_i \in \{0,1\}$ is
+\begin{equation}
+  \operatorname{NB}_{\mathcal{K}} = \frac{1000}{N_{\text{test}}} \sum_{i=1}^{N_{\text{test}}} \left[ \mathbb{I}\{\hat{p}_{\text{route},i} \ge \tau^*, Y_i = 1\} - \frac{C_{\text{FP}}}{C_{\text{FN}}} \mathbb{I}\{\hat{p}_{\text{route},i} \ge \tau^*, Y_i = 0\} - \frac{c_{\text{query}}}{C_{\text{FN}}} Q_i \right].
+  \label{eq:nb}
+\end{equation}
+Complete proofs for all theorems and propositions in this section are provided in Appendix~\ref{app:proofs}.
+
+\subsection{Predicates 1 and 2: Schervish Collision-Zone Scoring and High-Signal False Positive Pilots}
+\label{sec:pred12}
+
+\citet{schervish1989general} established that every regular strictly proper binary scoring rule $S_w(y, p)$ admits an integral representation over cost-weighted binary decision thresholds $\tau \in (0,1)$ with strictly positive mixing measure $w(\tau)\,d\tau$:
+\begin{equation}
+  S_w(y, p) = -y \int_p^1 (1 - \tau)\, w(\tau)\, d\tau - (1 - y) \int_0^p \tau\, w(\tau)\, d\tau \le 0.
+  \label{eq:schervish_general}
+\end{equation}
+Choosing the improper Beta$(0,0)$ density $w_{\log}(\tau) = [\tau(1-\tau)]^{-1}$ recovers ordinary Bernoulli log-likelihood $\ell(y,p) = y\log p + (1-y)\log(1-p)$. To concentrate statistical power around the operational threshold $\tau^*$ while eliminating the $\tau \to 0^+$ singularity, we define the \emph{Schervish Beta-Kernel Collision-Zone Score} $S_{\tau^*,\kappa}(y,p)$ by selecting $w_{\tau^*,\kappa}(\tau) = \operatorname{Beta}(\tau;\, \alpha, \beta)$ with
+\begin{equation}
+  \alpha = 1 + \kappa \tau^*, \qquad \beta = 1 + \kappa(1 - \tau^*), \qquad \kappa > 0.
+  \label{eq:beta_params}
+\end{equation}
+
+\begin{theorem}[Closed-Form Strict Properness and Singularity Elimination of $S_{\tau^*,\kappa}$]
+\label{thm:schervish}
+For every $\tau^* \in (0,1)$ and $\kappa > 0$, let $(\alpha,\beta)$ follow Eq.~\eqref{eq:beta_params} and let $I_p(a,b) = B(a,b)^{-1}\int_0^p t^{a-1}(1-t)^{b-1}\,dt$ denote the regularized incomplete beta function. Then:
+\begin{enumerate}
+  \item \emph{Exact Closed Form and Mode Alignment:} The threshold density $w_{\tau^*,\kappa}$ attains its unique global maximum at $\tau = (\alpha-1)/(\alpha+\beta-2) = \tau^*$, vanishes at both boundaries ($w_{\tau^*,\kappa}(0^+) = w_{\tau^*,\kappa}(1^-) = 0$), and yields
+  \begin{equation}
+    S_{\tau^*,\kappa}(y, p) = -y\,\frac{\beta}{\alpha+\beta}\big(1 - I_p(\alpha, \beta+1)\big) - (1-y)\,\frac{\alpha}{\alpha+\beta}\, I_p(\alpha+1, \beta).
+    \label{eq:schervish_closed}
+  \end{equation}
+  \item \emph{Strict Properness and Nonnegative Conditional Gain:} For any true conditional probability $\eta \in (0,1)$, $\frac{\partial}{\partial p}\mathbb{E}_{Y \sim \operatorname{Bern}(\eta)}[S_{\tau^*,\kappa}(Y,p)] = w_{\tau^*,\kappa}(p)(\eta - p)$, which vanishes uniquely at $p = \eta$. For nested Bayes posteriors $\eta_1 = \mathbb{P}(Y=1 \mid X_{\text{base}})$ and $\eta_2 = \mathbb{P}(Y=1 \mid X_{\text{base}}, Z)$, the expected score gain equals the exact generalized Bregman divergence
+  \begin{equation}
+    \Delta_{\tau^*,\kappa}(Z \mid X_{\text{base}}) \equiv \mathbb{E}\!\left[S_{\tau^*,\kappa}(Y,\eta_2) - S_{\tau^*,\kappa}(Y,\eta_1)\right] = \mathbb{E}\!\left[\int_{\eta_1}^{\eta_2} (\eta_2 - \tau)\, w_{\tau^*,\kappa}(\tau)\, d\tau\right] \ge 0,
+    \label{eq:bregman_gain}
+  \end{equation}
+  with equality if and only if $\eta_2 = \eta_1$ almost surely.
+  \item \emph{Asymptotic Suppression of Subthreshold True-Negative Dilution:} For a local update $\eta_2 = \eta_1 + \delta$ ($\delta \to 0$) at baseline risk $\eta_1 \ll \tau^*$, global log-loss assigns local curvature $\tfrac{1}{2}\delta^2 / [\eta_1(1-\eta_1)] = \Theta(\eta_1^{-1}\delta^2) \to \infty$, whereas $S_{\tau^*,\kappa}$ assigns $\tfrac{1}{2}w_{\tau^*,\kappa}(\eta_1)\delta^2 = \Theta(\eta_1^{\kappa\tau^*}\delta^2) \to 0$.
+\end{enumerate}
+\end{theorem}
+
+\textbf{High-Signal False Positive Constrained Neyman Allocation:} In Phase 1, leak-free $K_{\text{I}}$-fold out-of-fold (OOF) baseline predictions $\hat{p}_{1,i} = \hat{\eta}_{\text{base}}(X_{\text{base},i})$ (Platt-calibrated \citep{platt1999probabilistic} on a disjoint $15\%$ internal slice inside each fold) partition $\mathcal{D}_{\text{train}}$ of size $N$ into $H \le 2 B_{\text{score}}$ strata $\mathcal{U}_h = \{i : (Y_i, b_i) = (y_h, b_h)\}$ ($B_{\text{score}} = 8$ quantile bins of $\operatorname{logit}(\hat{p}_1)$) with population counts $N_h$. Differentiating $S_{\tau^*,\kappa}(y, \sigma(f))$ with respect to log-odds $f$ yields the exact first-order score increment for a Stage-2 logit update $\Delta_i$:
+\begin{equation}
+  \psi_i = S_{\tau^*,\kappa}(Y_i, \hat{p}_{2,i}) - S_{\tau^*,\kappa}(Y_i, \hat{p}_{1,i}) = w_{\tau^*,\kappa}(\hat{p}_{1,i})\,\hat{p}_{1,i}(1-\hat{p}_{1,i})(Y_i - \hat{p}_{1,i})\,\Delta_i + O(\Delta_i^2).
+  \label{eq:taylor_psi}
+\end{equation}
+For easy True Negatives ($Y_i=0, \hat{p}_{1,i} \ll \tau^*$), Eq.~\eqref{eq:taylor_psi} vanishes at rate $O(\hat{p}_{1,i}^{2+\kappa\tau^*})$, whereas for High-Signal False Positives ($Y_i=0, \hat{p}_{1,i} \approx \tau^*$) and boundary cases ($Y_i=1, \hat{p}_{1,i} \approx \tau^*$), the dispersion multiplier peaks sharply. We therefore allocate a budgeted without-replacement Phase-2 pilot $\mathcal{P}$ of size $n_{\text{pilot}} = \lfloor \rho N \rceil$ via water-filling constrained Neyman allocation \citep{lumley2010complex,tao2020optimal} with regularized dispersion proxy
+\begin{equation}
+  \tilde{\sigma}_{h,\text{CZ}} = w_{\tau^*,\kappa}(\bar{p}_h)\,\bar{p}_h(1-\bar{p}_h)\big(|y_h - \bar{p}_h| + 0.15\big) + 10^{-3},
+  \label{eq:cz_neyman}
+\end{equation}
+yielding exact Horvitz--Thompson (HT) weights $w_i = N_{h(i)} / n_{h(i)}$ ($\sum_{i \in \mathcal{P}} w_i = N$).
+
+\textbf{Sequential Forward Discovery with ESS-Adaptive Focus and Holm LCB Stopping:} On the single pilot $\mathcal{P}$, sequential forward discovery evaluates untruncated OOF score differences $\psi_{i, m \mid \mathcal{S}_{t-1}} = S_{\tau^*,\kappa_{\text{disc}}^*}(Y_i, \hat{p}_{\mathcal{S}_{t-1}\cup\{m\}}^{(-k(i))}) - S_{\tau^*,\kappa_{\text{disc}}^*}(Y_i, \hat{p}_{\mathcal{S}_{t-1}}^{(-k(i))})$ across $K=4$ stratified pilot folds initialized from the identical Stage-1 offset $\operatorname{logit}(\hat{p}_{1,i})$. To prevent discovery power loss under extreme rarity (e.g., $\pi = 1.88\%$ in low-acuity ED triage), the discovery concentration $\kappa_{\text{disc}}^* \in [0, \kappa]$ is solved via monotone bisection as the largest $\kappa' \in [0, \kappa]$ satisfying $\sum_{i \in \mathcal{P}} \exp(-2\kappa' D_{\text{KL}}(\operatorname{Bern}(\tau^*) \| \operatorname{Bern}(\hat{p}_{1,i}))) \ge \max(160, 0.22 n_{\text{pilot}})$.
+
+\begin{theorem}[Two-Phase Collision-Zone Variance and Stepwise Null FWER Control]
+\label{thm:hsfp_neyman}
+Let $\hat{G}_{m \mid \mathcal{S}_{t-1}} = N^{-1}\sum_{i \in \mathcal{P}} w_i \psi_{i, m \mid \mathcal{S}_{t-1}}$ be the HT collision-zone gain estimate on $\mathcal{P}$ with pilot residuals $r_i = \psi_i - \hat{G}$ and within-stratum sample variances $s_h^2$.
+\begin{enumerate}
+  \item Assuming within-stratum sample sizes $n_h \ge 2$ (or census sampling $n_h = N_h$, where $1 - n_h/N_h = 0$ and the stratum contributes zero Phase-II variance), conditional on Phase-1 data $\mathcal{F}_{\text{I}}$, $\mathbb{E}_{\text{II}}[\hat{G} \mid \mathcal{F}_{\text{I}}] = N^{-1}\sum_{i=1}^N \psi_i$, and the total two-phase variance estimator
+  \begin{equation}
+    \widehat{V}_{\text{total}} = \underbrace{\frac{n_{\text{pilot}}}{n_{\text{pilot}}-1}\frac{1}{N^2}\sum_{i \in \mathcal{P}} w_i r_i^2}_{\widehat{V}_{\text{I}}} + \underbrace{\frac{1}{N^2}\sum_{h=1}^H N_h^2 \left(1 - \frac{n_h}{N_h}\right)\frac{s_h^2}{n_h}}_{\widehat{V}_{\text{II}}}
+    \label{eq:two_phase_var}
+  \end{equation}
+  reduces identically to $s^2 / n_{\text{pilot}}$ under simple random sampling ($H=1$).
+  \item Conditionally on a fixed (or consistently selected) active set $\mathcal{S}_{t-1}$, under capacity-matched cross-fitted null non-positivity ($\mathbb{E}[\psi_{i, m \mid \mathcal{S}_{t-1}}] \le 0$ for all $m \in \mathcal{H}_0(\mathcal{S}_{t-1})$) and regular asymptotic normality of studentized HT gains \citep{williamson2021nonparametric}, admitting at step $t$ the highest gain-per-cost affordable channel passing Holm's step-down threshold $p_{\text{Holm},m}^{(t)} < \alpha$ (from one-sided $Z$-values $\hat{G}_{m\mid\mathcal{S}_{t-1}} / \widehat{V}_{\text{total},m}^{1/2}$) and halting otherwise bounds the asymptotic probability of selecting any null channel at any all-null step by $\alpha$.
+\end{enumerate}
+\end{theorem}
+
+\subsection{Predicate 3: KL-Gated Residual Modulation Without GBDT Leaf Starvation}
+\label{sec:fluid}
+
+Once channels $\mathcal{S}$ are discovered, fitting a single Stage-2 GBDT with aggressive collision sample weights ($w_i \approx 0.05$ on $90\%+$ of rows) fails for three coupled reasons: (i) collapsing effective sample size starves leaves and shrinks rare-event main effects back toward Stage-1 $\ell_1(x)$; (ii) exposing a small effective collision slice to hundreds of noisy Stage-1 intake columns induces high-dimensional split variance; and (iii) applying an ungated specialist tree back onto easy True Negatives at test time pushes subthreshold discharges across $\tau^*$.
+
+We resolve all three failures simultaneously without discarding a single sample by keeping \emph{unweighted canonical Bernoulli maximum likelihood} and decomposing Stage-2 log-odds into two scales:
+\begin{equation}
+  f(x, z) = \alpha_0 + \beta_{\text{glob}}\, f_{\text{glob}}(x, z) + \beta_{\text{CZ}}\, \pi_{\text{union}}\!\big(\ell_1(x), f_{\text{glob}}(x, z)\big)\, \Delta_{\text{CZ}}\!\big(\ell_1(x), f_{\text{glob}}(x, z), z_{\mathcal{S}}\big),
+  \label{eq:fluid_decomp}
+\end{equation}
+where $f_{\text{glob}}(x,z)$ is a $100\%$-sample unweighted Stage-2 GBDT backbone, $\Delta_{\text{CZ}}$ is a low-dimensional specialist operating strictly on the sufficient-statistic bottleneck $[\ell_1(x), f_{\text{glob}}(x,z), z_{\mathcal{S}}]$ (excluding raw noisy $X_{\text{base}}$ columns), and $\pi_{\text{union}}$ is the smooth probabilistic-OR union of Bernoulli Kullback--Leibler (KL) Boltzmann gates around $\tau^*$:
+\begin{align}
+  \pi_{\kappa}(p) &= \exp\!\Big(-\kappa\, D_{\text{KL}}\big(\operatorname{Bern}(\tau^*) \,\|\, \operatorname{Bern}(p)\big)\Big) = \left(\frac{p}{\tau^*}\right)^{\kappa\tau^*}\!\left(\frac{1-p}{1-\tau^*}\right)^{\kappa(1-\tau^*)} \in (0, 1], \label{eq:kl_gate}\\
+  \pi_{\text{union}}(\ell_1, f_{\text{glob}}) &= 1 - \big(1 - \pi_{\kappa^*}(\sigma(\ell_1))\big)\big(1 - \pi_{\kappa^*}(\sigma(f_{\text{glob}}))\big) \in (0, 1]. \label{eq:union_gate}
+\end{align}
+The union gate covers both intake High-Signal False Positives ($\sigma(\ell_1) \approx \tau^*$, even if a biased $f_{\text{glob}}$ shifted them down) and lab-rescued occult positives ($\sigma(f_{\text{glob}}) \approx \tau^*$ despite benign triage vitals), while vanishing on easy True Negatives where both stages agree risk is negligible.
+
+\textbf{Dynamic Active-Mass Bisection and OOF Stacking:} On $\mathcal{D}_{\text{train}}$, we generate 3-fold OOF Platt-calibrated backbone predictions $f_{\text{glob}}^{\text{oof}}$ so that $\Delta_{\text{CZ}}$ trains on genuine out-of-sample residuals rather than memorized training residuals \citep{wolpert1992stacked,vanderlaan2007super}. We solve $\kappa^* \in [0, \kappa_{\max}]$ by exact monotone bisection on the active quadratic Hessian mass $M(\kappa) = \sum_{i=1}^{N_{\text{train}}} \pi_{\kappa}(\sigma(\ell_{1,i}))^2 \ge M_{\min}$ ($M_{\min} = 240$), scale specialist tree capacity with $M_{\text{union}} = \sum_i \pi_{\text{union},i}^2$ ($8$ leaves for $M_{\text{union}} < 800$, $15$ leaves for $800 \le M_{\text{union}} < 2500$, $23$ leaves for $M_{\text{union}} \ge 2500$), and scale leaf regularization $\tilde{\lambda}$ proportionally to the active Fisher ratio $\sum_i \pi_i^2 h_{0,i} / \sum_i h_{0,i}$. Finally, $(\alpha_0, \beta_{\text{glob}} \in [0.5, 1.3], \beta_{\text{CZ}} \in [0, 1.5])$ are fit strictly on 3-fold OOF predictions inside $\mathcal{D}_{\text{train}}$ by minimizing $-S_{\tau^*,20}(y,\sigma(f)) - 0.05\,\ell(y,\sigma(f))$ plus a tiny $2 \times 10^{-4}$ ridge anchor to $(\beta_{\text{glob}}=1, \beta_{\text{CZ}}=0)$, leaving the held-out calibration split $\mathcal{D}_{\text{cal}}$ $100\%$ exchangeable for VOI routing and Conformal BH selection \citep{jin2023selection}.
+
+\begin{proposition}[Properties of KL-Gated Residual Modulation]
+\label{prop:fluid}
+Let $\mathcal{L}(y, f) = -yf + \log(1 + e^f)$ be unweighted canonical Bernoulli log-loss under $f_i = f_{\text{glob},i} + \pi_i \Delta_{\text{CZ},i}$ with $(X,Z)$-measurable gate $\pi_i = \pi_{\text{union}}(X_i, Z_i) \in (0, 1]$.
+\begin{enumerate}
+  \item \emph{Unique Monotone Focus $\kappa^*$:} If $\exists\, i$ with $\sigma(\ell_{1,i}) \ne \tau^*$ and $M(\kappa_{\max}) < M_{\min} < N_{\text{train}}$, then $M(\kappa) = \sum_i \exp(-2\kappa D_{\text{KL}}(\operatorname{Bern}(\tau^*) \| \operatorname{Bern}(\sigma(\ell_{1,i}))))$ is strictly decreasing and continuous, admitting a unique root $\kappa^* \in (0, \kappa_{\max})$.
+  \item \emph{Exact Chain-Rule Convexity and Posterior Invariance:} Differentiating $\mathcal{L}$ with respect to $\Delta_{\text{CZ},i}$ gives exact gradient $g_i = \pi_i(\sigma(f_i) - y_i)$ and strictly positive Hessian $h_i = \pi_i^2 \sigma(f_i)(1 - \sigma(f_i)) > 0$. The population risk minimizer over unconstrained $\Delta_{\text{CZ}}$ satisfies $\sigma(f_{\text{glob}}(x,z) + \pi_{\text{union}}(x,z)\Delta_{\text{CZ}}^*(x,z)) = \mathbb{P}(Y=1 \mid X=x, Z=z)$ identically (zero prior-shift distortion).
+  \item \emph{Leaf-Starvation Fallback to the Global Backbone:} Inside any leaf $R_\ell$ of tree $t$ with L2 penalty $\tilde{\lambda} > 0$, the Newton leaf update
+  \begin{equation}
+    \hat{\gamma}_\ell^{\text{CZ}} = -\frac{\sum_{i \in R_\ell} \pi_i (p_i - y_i)}{\sum_{i \in R_\ell} \pi_i^2 p_i(1 - p_i) + \tilde{\lambda}}
+    \label{eq:gated_newton}
+  \end{equation}
+  satisfies the unconditional bound $|\hat{\gamma}_\ell^{\text{CZ}}| \le \tilde{\lambda}^{-1}\sum_{i \in R_\ell} \pi_i \to 0$ as total leaf gate mass $\sum_{i \in R_\ell} \pi_i \to 0$ (and likewise whenever collision Fisher curvature $\sum_{i \in R_\ell} \pi_i^2 p_i(1-p_i) \to 0$ on a bounded-size leaf with $p_i \in [\varepsilon, 1-\varepsilon]$), smoothly preserving $f(x,z) \to f_{\text{glob}}(x,z)$ rather than shrinking to Stage-1 $\ell_1(x)$.
+\end{enumerate}
+\end{proposition}
+
+\subsection{Nonparametric Empirical Martingale VOI and Informative-Ordering De-Confounding}
+\label{sec:voi_agniel}
+
+At deployment, streaming Value-of-Information (VOI) routing queries Stage-2 channels $\mathcal{S}$ for arriving encounter $x$ if and only if expected Bayes decision-loss reduction exceeds $c_{\text{query}}$ (or exceeds a $\mathcal{D}_{\text{cal}}$-calibrated quantile for budgeted $q=20\%$ routing with calibration-exact randomized tie-breaking). Because laboratory assays (\texttt{Lactate}, \texttt{Troponin}) produce heavily right-skewed or bimodal log-odds updates $\Delta = \operatorname{logit}(\hat{p}_2) - \operatorname{logit}(\hat{p}_1)$, symmetric Logit-Normal quadrature can misestimate threshold-crossing probabilities. Instead, within each of $12$ quantile bins of $\hat{p}_1$ on $\mathcal{D}_{\text{cal}}$, we retain $K=33$ empirical quantiles $\{\delta_{b,1}, \dots, \delta_{b,K}\}$ of observed calibration updates and solve for the exact martingale shift $\mu^*(p_1)$ such that $\frac{1}{K}\sum_{r=1}^K \sigma(\operatorname{logit}(p_1) + \mu^*(p_1) + \delta_{b,r}) = p_1$, defining
+\begin{equation}
+  \begin{aligned}
+    \widehat{\operatorname{VOI}}_{\text{emp}}(p_1) &= L^*(p_1) - \frac{1}{K}\sum_{r=1}^K L^*\!\Big(\sigma\big(\operatorname{logit}(p_1) + \mu^*(p_1) + \delta_{b(p_1), r}\big)\Big), \\
+    L^*(p) &= \min\{p C_{\text{FN}},\, (1 - p) C_{\text{FP}}\}.
+  \end{aligned}
+  \label{eq:emp_voi}
+\end{equation}
+
+In observational EHR cohorts, missingness of a Stage-2 lab ($D_c = 0$ vs.\ $D_c = 1$) frequently reflects unmeasured bedside clinician suspicion rather than assay biology \citep{agniel2018biases}. To audit this confounding explicitly, we define \texttt{AgnielDeconfounder}: on $\mathcal{D}_{\text{train}}$, for each continuous lab $Z_c$, we fit regularized linear conditional expectation $\hat{\mu}_c(X_{\text{base}})$ and empirical residual pool $\hat{\mathcal{E}}_c$ strictly on measured encounters ($D_c = 1$), impute unmeasured rows ($D_c = 0$) via $Z_c^{\text{imp}} = \hat{\mu}_c(X_{\text{base}}) + \varepsilon$ ($\varepsilon \sim \hat{\mathcal{E}}_c$), and omit missingness indicators (approximating the exact conditional distribution $P(Z_c \mid X_{\text{base}}, D_c=1)$ under a linear-mean, homoscedastic-residual specification).
+
+\begin{proposition}[Empirical Martingale Coherence and Exact Informative-Ordering Cancellation]
+\label{prop:emp_voi_agniel}
+\leavevmode
+\begin{enumerate}
+  \item \emph{Distribution-Free Nonnegative VOI:} For every $p_1 \in (0,1)$ and arbitrary finite quantile vector $\{\delta_{b,r}\}_{r=1}^K \subset \mathbb{R}$, the martingale shift $\mu^*(p_1) \in \mathbb{R}$ exists uniquely and yields $\widehat{\operatorname{VOI}}_{\text{emp}}(p_1) \ge 0$ identically without Gaussian assumptions.
+  \item \emph{Exact Cancellation of Clinician-Ordering Confounding:} Suppose $P(D = 1 \mid X_{\text{base}}) > 0$ almost surely, and let $\tilde{Z} = D Z + (1 - D) Z^{\text{imp}}$ where $Z^{\text{imp}} \perp (Y, D) \mid X_{\text{base}}$ and $P(Z^{\text{imp}} \in A \mid X_{\text{base}}) = P(Z \in A \mid X_{\text{base}}, D=1)$ for every measurable set $A$. If the assay carries no biological signal beyond baseline intake among tested patients ($Y \perp Z \mid X_{\text{base}}, D=1$), then even under arbitrarily strong clinician-ordering confounding ($Y \not\perp D \mid X_{\text{base}}$), $\tilde{Z} \perp Y \mid X_{\text{base}}$ holds identically.
+\end{enumerate}
+\end{proposition}
+
+\section{Dual-Track Multi-Hospital Study Design}
+\label{sec:study_design}
+
+Evaluating methodological innovations on clinical repositories poses a dual challenge: deviating from published benchmark features or splits obscures comparability against landmark studies, whereas retaining published EHR conventions leaves results vulnerable to informative ordering bias \citep{agniel2018biases}, socioeconomic routing bias \citep{obermeyer2019dissecting}, and heuristic costs \citep{collins2024tripodai}. We therefore execute a \textbf{Dual-Track Protocol} across three synthetic regimes and five acute-care hospitals ($600{,}154$ encounters total):
+
+\begin{enumerate}
+  \item \textbf{Synthetic Mechanism and Leaf-Starvation Benchmarks:}
+    \emph{Sim 1 ($30$ replicates, $N=10{,}000$):} $94\%$ subthreshold True-Negative sea ($\hat{p}_1 \approx 2.4\%$, driven by decoy channel \texttt{ch\_tn} shifting risk strictly below $\tau^* = 10\%$) colliding with a $6\%$ Collision Zone ($\hat{p}_1 \approx 10\%$, resolved by \texttt{ch\_cz}) plus four pure-noise null channels ($20\%$ pilot, $B=1$ for recovery and $B=5$ for FWER).
+    \emph{Sim 2 ($15$ replicates $\times$ $3$ Stage-2 regimes, $N_{\text{train}}=4{,}500, N_{\text{test}}=8{,}000, \tau^*=8\%$):} Compares unweighted Global GBDT, Naive Downweighted Specialist (\texttt{floor=0.05}), and \texttt{FluidCollisionBackboneClassifier} under (i) homogeneous physiology, (ii) subthreshold True-Negative slope inversion, and (iii) True-Negative split-capacity hijack.
+  \item \textbf{Multi-Hospital Acute Sepsis (\citealp{goldberger2000physionet,reyna2020early}; Beth Israel Deaconess $\to$ Emory External Transfer):}
+    From $40{,}336$ hourly ICU/ED trajectories across Beth Israel Deaconess Medical Center (\texttt{Set A}, Boston) and Emory University Hospital (\texttt{Set B}, Atlanta), we construct strictly causal 6-hour risk-set landmarks excluding patients with length $<6\text{h}$ or pre-landmark \texttt{SepsisLabel}$=1$, yielding $N_{\text{BIDMC}} = 19{,}972$ ($7.14\%$ prospective sepsis) and $N_{\text{Emory}} = 19{,}696$ ($4.25\%$ prospective sepsis; cross-hospital prevalence shift). Baseline $X_{\text{base}}$ uses zero-cost bedside vitals (HR, O2Sat, Temp, SBP, MAP, DBP, Resp summaries, Shock Index, SIRS vitals count) and demographics; contract $\tau^* = 6.25\%$ ($C_{\text{FN}}/C_{\text{FP}} = 15$, $c_{\text{query}}=0.03$, $B=3.2$, $20\%$ pilot). All discovery, training, and calibration occur strictly on Beth Israel ($60/20/20$, $R=10$ splits) and transfer \emph{zero-shot} to Emory.
+    \begin{itemize}
+      \item \emph{Track A (PhysioNet 2019 Parity):} Standard $M=15$ clinical lab/oxygenation channels including \texttt{FiO2}/\texttt{SaO2}/\texttt{EtCO2} and \texttt{\_drawn} indicators, plus a stress pool adding $3$ pure-noise nulls and $2$ noisy Stage-2 twins.
+      \item \emph{Track B1a (Agniel-Blocked Sparse Stress, $R=8$):} Drops bedside ventilator parameters (\texttt{FiO2}/\texttt{SaO2}/\texttt{EtCO2}) and \texttt{\_drawn} flags, applies \texttt{AgnielDeconfounder}, and prices $M=14$ venipuncture panels using 2025 CMS Medicare Clinical Laboratory Fee Schedule (CPT) relative costs \citep{cms2025clfs} (normalized to Lactate \texttt{CPT 83605} $= 1.00$; Blood Gas \texttt{CPT 82803} $= 1.79$; CBC components \texttt{CPT 85025} $= 0.78$; Renal \texttt{CPT 82565+84520} $= 0.92$; Troponin-I \texttt{CPT 84484} $= 1.15$).
+      \item \emph{Track B1b (Measured-Bloodwork Pure Assay Transfer, $R=10$):} Restricts to encounters with routine admission bloodwork drawn in hours $1\text{--}6$ ($N_{\text{BIDMC}}=8{,}345 \to N_{\text{Emory}}=6{,}463$) so ordering indicators carry zero variance and pure quantitative CPT-costed blood biology is isolated without $92\%$-missing single-imputation attenuation.
+      \item \emph{Track B2 (Strict Lead-Time Gap, $R=8$):} Observes hours $1\text{--}4$, excludes any patient with \texttt{SepsisLabel}$=1$ through hour $6$ ($\ge 8\text{h}$ before Sepsis-3 onset; $N_{\text{BIDMC}}=19{,}930 \to N_{\text{Emory}}=19{,}673$), using value-only CPT blood panels.
+    \end{itemize}
+  \item \textbf{Multi-Campus Emergency Department Triage (\citealp{hong2018predicting}; Yale New Haven Health System, $560{,}486$ Adult Visits):}
+    Covers three distinct EDs---Campus A ($322{,}283$ visits), Campus B ($166{,}497$ visits), and Campus C ($71{,}706$ visits)---with $29.73\%$ overall admission and $N=152{,}995$ low-acuity fast-track visits (\texttt{ESI 4--5}, $1.88\%$ unexpected occult admission; $\tau^* = 4.0\%$, $C_{\text{FN}}/C_{\text{FP}} = 24$, $q_{\text{target}}=0.25$, $c_{\text{query}}=0.025$). Stage-2 comprises $M=18$ historical EHR/HIE channels (medications, prior utilization, labs, EKG/Echo, imaging, comorbidities; $B=3.0$).
+    \begin{itemize}
+      \item \emph{Track A (Hong et al.\ 2018 Parity):} Exact published triage feature set across all $152{,}995$ ESI 4--5 visits ($60\text{k}$ train / $20\text{k}$ cal / $72{,}995$ held-out test, $R=8$) and all $560{,}486$ adult visits ($75\text{k}$ train / $25\text{k}$ cal / $460{,}486$ held-out test, $R=6$, $\tau^*=15\%$).
+      \item \emph{Track B3 (Fairness-Blinded ESI 4--5 + Subgroup Audit, $R=6$):} Strips \texttt{race}, \texttt{ethnicity}, \texttt{lang}, \texttt{religion}, \texttt{maritalstatus}, \texttt{employstatus}, \texttt{insurance\_status}, \texttt{name}, and \texttt{dep\_name} from $X_{\text{base}}$ ($214$ blinded clinical features) and audits post-hoc Net Benefit across $11$ demographic, language, and insurance subgroups.
+      \item \emph{Track B4 (Second Zero-Shot Multi-Hospital Transfer: Campus A $\to$ Campus B):} Trains fairness-blinded models strictly on Campus A ($322{,}283$ visits) and evaluates zero-shot on Campus B across both low-acuity ESI 4--5 ($N_{\text{ext}}=51{,}205$, $R=6$) and all-comers ($N_{\text{ext}}=166{,}497$, $R=5$).
+    \end{itemize}
+\end{enumerate}
+
+To address resampling correlation across overlapping splits \citep{nadeau2003inference,bates2024crossvalidation}, all external hospital comparisons (Emory and Yale Campus B) report $1{,}000$-replicate \emph{patient-level paired bootstrap} $95\%$ confidence intervals and two-sided $p$-values evaluated on the split-averaged out-of-sample ensemble predictions (matching the Vickers Decision Curves across $\tau \in [2\%, 15\%]$; note that ensemble Net Benefit differences therefore differ from simple arithmetic differences of per-split mean Auto-VOI Net Benefits).
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Synthetic Mechanism Verification: True-Negative Dilution and Leaf Starvation}
+\label{sec:res_sim}
+
+Table~\ref{tab:sim_results} and Figure~\ref{fig:panel1}A--B summarize our controlled synthetic audits. Under $94\%$ subthreshold True-Negative abundance (Sim 1, $30$ replicates), \texttt{Global-CMI} (Global Neyman + Global CMI) is hijacked by the subthreshold decoy channel \texttt{ch\_tn} on $86.7\%$ of runs ($13.3\%$ true tie-breaker recovery), degrading Auto-VOI Net Benefit to $-0.36$ ($95\%$ CI $[-0.86, +0.14]$) vs.\ $-0.08$ for Stage-1 alone. In contrast, \texttt{CZ-Fluid} (Collision-Zone Neyman + Schervish $S_{\tau^*,\kappa}$ + Fluid KL Backbone) nearly doubles High-Signal False Positive concentration among pilot controls ($22.8\%$ vs.\ $11.9\%$ Global Neyman and $5.9\%$ SRS), recovers the true collision-zone tie-breaker \texttt{ch\_cz} on $93.3\%$ of runs ($7\times$ \texttt{Global-CMI}), controls four-channel pure-noise null FWER at $3.3\%$ ($\le 5\%$), and lifts Auto-VOI Net Benefit to $+1.73$ ($95\%$ CI $[+1.24, +2.23]$).
+
+In Sim 2 ($15$ replicates per regime), Naive Downweighting (\texttt{floor=0.05}) loses $-0.57$ Net Benefit under homogeneous physiology ($5.78$ vs.\ $6.35$ Global) due to leaf starvation and also loses Net Benefit under subthreshold slope inversion ($8.13$ vs.\ $8.50$) because ungated specialist trees spill false positives back onto subthreshold True Negatives. \texttt{FluidCollisionBackboneClassifier} eliminates leaf starvation under homogeneous physiology ($6.28$ NB, highest AUPRC $0.1839$, automatically damping $\hat{\beta}_{\text{CZ}} = 0.27$) while opening $\hat{\beta}_{\text{CZ}} = 1.26$ and $0.79$ under subthreshold inversion and capacity hijack to deliver $+15.5\%$ and $+15.3\%$ Net Benefit gains ($+43.1\%$ and $+19.8\%$ relative AUPRC lifts) over Global GBDT.
+
+\begin{table}[h!]
+\centering
+\caption{Controlled synthetic audits of True-Negative dilution (Sim 1, $30$ reps) and Stage-2 leaf starvation (Sim 2, $15$ reps/regime; mean $\pm$ SE; archived in the repository JSON summaries).}
+\label{tab:sim_results}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Benchmark} & \textbf{Metric} & \textbf{Global-CMI / S2} & \textbf{Naive Downwt.\ S2} & \textbf{CZ-Fluid Backbone} & \textbf{Learned} $\hat{\beta}_{\text{CZ}}$ \\
+\midrule
+\multirow{3}{*}{\textbf{Sim 1:} TN Dilution ($30$ reps)}
+  & True CZ Channel Picked ($\%$) & $13.3\% \pm 6.3\%$ & --- & $\mathbf{93.3\% \pm 4.6\%}$ & --- \\
+  & Pilot High-Signal FP Share ($\%$) & $11.9\% \pm 1.5\%$ & --- & $\mathbf{22.8\% \pm 3.2\%}$ & (Null FWER $3.3\%$) \\
+  & Auto-VOI Net Benefit ($/1\text{k}$) & $-0.36 \pm 0.25$ & --- & $\mathbf{+1.73 \pm 0.25}$ & --- \\
+\midrule
+\textbf{Sim 2A:} Homogeneous Physiology & NB $/1\text{k}$ (AUPRC) & $\mathbf{6.35 \pm 0.33}$ ($0.1816$) & $5.78 \pm 0.25$ ($0.1762$) & $6.28 \pm 0.33$ ($\mathbf{0.1839}$) & $0.27 \pm 0.11$ \\
+\textbf{Sim 2B:} Subthreshold TN Inversion & NB $/1\text{k}$ (AUPRC) & $8.50 \pm 0.46$ ($0.2059$) & $8.13 \pm 0.47$ ($0.2220$) & $\mathbf{9.82 \pm 0.45}$ ($\mathbf{0.2947}$) & $1.26 \pm 0.04$ \\
+\textbf{Sim 2C:} TN Capacity Hijack & NB $/1\text{k}$ (AUPRC) & $3.72 \pm 0.20$ ($0.1091$) & $3.33 \pm 0.19$ ($0.1087$) & $\mathbf{4.29 \pm 0.19}$ ($\mathbf{0.1307}$) & $0.79 \pm 0.10$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{fig_paper2_three_predicates_ws4tb.png}
+\caption{Track A mechanism and multi-hospital overview. \textbf{(A)} Log-loss $1/[p(1-p)]$ singularity vs.\ smooth Schervish Beta-kernel $w_{\text{CZ}}(p)$ and Stage-2 KL gate $\pi_{\kappa^*}(p)$ peaking at $\tau^*=8\%$. \textbf{(B)} Synthetic dilution rescue ($13.3\% \to 93.3\%$) and pilot High-Signal FP concentration ($11.9\% \to 22.8\%$). \textbf{(C)} Zero-shot Emory external sepsis Net Benefit ($N=19{,}696$): superadditive gain of \texttt{CZ-Fluid} ($+2.08$) over \texttt{Global-CMI} ($+0.97$) and starved Naive Downweighting ($+0.65$). \textbf{(D)} Net Benefit gain over Stage-1 across BIDMC, Yale ESI 4--5 ($153\text{k}$), and Yale All-Comers ($560\text{k}$), illustrating leaf-starvation physics across event counts.}
+\label{fig:panel1}
+\end{figure}
+
+\subsection{Zero-Shot Cross-Hospital Sepsis Transfer (Beth Israel $\to$ Emory): Dual-Track Audit}
+\label{sec:res_sepsis}
+
+Table~\ref{tab:sepsis_dual} presents the complete $2\times 2$ factorial and Dual-Track results across Beth Israel Deaconess and zero-shot Emory external hospital validation (Figures~\ref{fig:panel1}C and \ref{fig:panel2}A--B):
+
+\begin{itemize}
+  \item \textbf{Track A (PhysioNet 2019 Parity, $10$ splits):} On Beth Israel discovery pilots ($20\%$), \texttt{Global-CMI} misses \texttt{lab\_oxygenation\_vent} on $2/10$ splits (including two empty selections), whereas Collision-Zone Discovery recovers \texttt{lab\_oxygenation\_vent} on $10/10$ splits (plus \texttt{lab\_lactate} and \texttt{lab\_blood\_gas\_acidbase}) with $0$ spurious selections across $10/10$ null/twin stress pools. Internally on Beth Israel, \texttt{CZ-Fluid} ($\hat{\beta}_{\text{CZ}} = 0.47$) achieves the highest AUROC ($0.7423$ vs.\ $0.7342$ \texttt{Global-CMI}), highest Auto-VOI Net Benefit ($28.25$ vs.\ $28.08$), highest $100\%$-query Net Benefit ($27.36$ vs.\ $26.83$), and highest \texttt{CfBH} recall ($9.40\%$ vs.\ $8.32\%$). On \emph{zero-shot external transfer to Emory} ($N=19{,}696$; prevalence shift $7.14\% \to 4.25\%$), bedside vitals alone suffer negative Net Benefit ($-1.59 \pm 0.27$). Collision-Zone Discovery alone lifts Emory Auto-VOI NB from $+0.97 \pm 0.55$ (\texttt{Global-CMI}) to $+1.53 \pm 0.23$; naive Stage-2 downweighting starves leaves ($+0.65 \pm 0.22$, AUPRC $0.0717$); and pairing Collision-Zone Discovery with the Fluid KL-Gated Backbone produces a superadditive jump to $\mathbf{+2.08 \pm 0.20}$ ($2.14\times$ \texttt{Global-CMI}, $3.20\times$ Naive Downweighting, $7.7\times$ \texttt{Global-CMI} at $q=20\%$ [$+0.77$ vs.\ $+0.10$], highest external AUROC $0.6248$ and AUPRC $0.0795$), outperforming \texttt{Global-CMI} on $9/10$ splits.
+  \item \textbf{Track B1b (Pure Measured Bloodwork + CMS CPT Costs, Zero Ordering Flags, $N_{\text{BIDMC}}=8{,}345 \to N_{\text{Emory}}=6{,}463$):} Removing ventilator settings (\texttt{FiO2}/\texttt{SaO2}/\texttt{EtCO2}) and all \texttt{\_drawn} indicators isolates true blood-draw biology: Collision-Zone Discovery selects \texttt{lab\_lactate} (\texttt{CPT 83605}, $3/10$) and \texttt{lab\_blood\_gas\_acidbase} (\texttt{CPT 82803}, $1/10$). \texttt{CZ-Fluid} leads both internally on Beth Israel (Auto-VOI NB $33.26$ vs.\ $32.22$, AUROC $0.6752$ vs.\ $0.6715$) and externally on Emory (Auto-VOI NB $\mathbf{+3.15 \pm 0.48}$ vs.\ $+2.84 \pm 0.59$ \texttt{Global-CMI} and $+2.31$ Vitals; AUROC $0.6073$ vs.\ $0.5998$). Under $1{,}000$-replicate \emph{patient-level paired bootstrap} on the $6{,}463$ Emory patients, \texttt{CZ-Fluid}'s ensemble outperforms \texttt{Global-CMI} by $\mathbf{+1.51}$ Net Benefit per $1{,}000$ ($95\%$ CI $[+0.47, +2.52]$, two-sided $p = 0.006$) and Bedside Vitals by $\mathbf{+1.75}$ ($95\%$ CI $[+0.58, +2.95]$, $p = 0.008$). Across the full Vickers Decision Curve (Figure~\ref{fig:panel2}B), \texttt{CZ-Fluid} outperforms \texttt{Global-CMI}, Bedside Vitals, and Treat All across the sepsis threshold band $\tau \in [4\%, 12.5\%]$ (e.g., $+5.19$ vs.\ $+3.68$ at $\tau=6.25\%$; $+0.83$ vs.\ $-0.84$ at $\tau=8.0\%$), and exceeds Treat None ($0$) across $\tau \in [4\%, 8\%]$ and at $\tau = 12.5\%$ (dipping to $-0.55$ at $\tau = 10\%$).
+  \item \textbf{Track B1a (Agniel Informative-Ordering Stress Test, $92\%$-Unmeasured Specialty Assays) and Track B2 (Strict $4\text{h}+2\text{h}$ Gap):} When \texttt{AgnielDeconfounder} blocks ordering suspicion across the full $19{,}972$-patient cohort where specialty assays are $\sim 92\%$ unmeasured, \texttt{Global-CMI} falsely selects sparse labs on $4/8$ splits (\texttt{lab\_liver\_enzymes}, \texttt{lab\_blood\_gas}, \texttt{lab\_lactate}), dragging Emory NB down from $-1.75$ to $-2.17 \pm 0.35$, whereas Collision-Zone Holm LCB abstains cleanly on $8/8$ splits ($-1.75$, zero wasted queries). Under the strict $4\text{h}+2\text{h}$ lead-time gap (Track B2, $\ge 8\text{h}$ prior to Sepsis-3 onset), both methods isolate Lactate/ABG and reduce cross-hospital baseline loss by $+0.80$ NB ($-3.46 \to -2.67$ vs.\ $-2.65$, $p=0.238$), illustrating the calibration-shift boundary of zero-shot long-horizon transfer.
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{Zero-shot cross-hospital sepsis transfer (Beth Israel $\to$ Emory, $\tau^*=6.25\%$) across Track A (PhysioNet parity) and Track B (Hardened CPT blood draws, Agniel stress, and strict $4\text{h}+2\text{h}$ gap). Paired bootstrap differences evaluate split-averaged ensemble predictions on Emory ($B=1{,}000$).}
+\label{tab:sepsis_dual}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Track / Cohort} & \textbf{Method Arm} & \textbf{BIDMC Int.} & \textbf{Emory Ext.} & \textbf{Emory Ext.} & \textbf{Emory} & \textbf{Emory} & \textbf{Emory Paired Boot.} \\
+ & & \textbf{AUROC (NB)} & \textbf{AUROC} & \textbf{AUPRC} & $q=20\%$ \textbf{NB} & \textbf{Auto-VOI NB} & \textbf{vs.\ Global-CMI} ($95\%$ CI, $p$) \\
+\midrule
+\multirow{6}{*}{\shortstack[l]{\textbf{Track A: 6h Parity}\\$19{,}972 \to 19{,}696$\\($R=10$; $0/10$ stress FP)}}
+  & Stage-1 Bedside Vitals ($0\%$ q) & --- ($25.98$) & --- & --- & $-1.59$ & $-1.59 \pm 0.27$ & --- \\
+  & Global-CMI + Global S2 & $0.7342$ ($28.08$) & $0.6088$ & $0.0740$ & $+0.10$ & $+0.97 \pm 0.55$ & Reference \\
+  & Abl.\ 1: Global-CMI + Fluid S2 & $0.7368$ ($27.93$) & $0.6168$ & $0.0770$ & $+0.30$ & $+1.38 \pm 0.60$ & --- \\
+  & Abl.\ 2: CZ Disc.\ + Global S2 & $0.7385$ ($28.17$) & $0.6180$ & $0.0761$ & $+0.49$ & $+1.53 \pm 0.23$ & --- \\
+  & Abl.\ 3: CZ Disc.\ + Naive Downwt. & $0.7327$ ($27.73$) & $0.6076$ & $0.0717$ & $+0.20$ & $+0.65 \pm 0.22$ & (Leaf starvation) \\
+  & \textbf{CZ-Fluid (CZ + Fluid Backbone)} & $\mathbf{0.7423}$ ($\mathbf{28.25}$) & $\mathbf{0.6248}$ & $\mathbf{0.0795}$ & $\mathbf{+0.77}$ & $\mathbf{+2.08 \pm 0.20}$ & ($9/10$ splits won) \\
+\midrule
+\multirow{3}{*}{\shortstack[l]{\textbf{Track B1b: Pure Blood}\\Measured CPT ($R=10$)\\$8{,}345 \to 6{,}463$}}
+  & Stage-1 Bedside Vitals ($0\%$ q) & --- ($32.69$) & --- & --- & $+2.31$ & $+2.31 \pm 0.55$ & vs.\ Base: $+1.75$ ($p=0.008$) \\
+  & Global-CMI + Global S2 & $0.6715$ ($32.22$) & $0.5998$ & $0.0841$ & $+2.63$ & $+2.84 \pm 0.59$ & Reference \\
+  & \textbf{CZ-Fluid (CZ + Fluid Backbone)} & $\mathbf{0.6752}$ ($\mathbf{33.26}$) & $\mathbf{0.6073}$ & $\mathbf{0.0858}$ & $\mathbf{+2.72}$ & $\mathbf{+3.15 \pm 0.48}$ & $\mathbf{+1.51}$ ($[+0.47,+2.52]$, $\mathbf{0.006}$) \\
+\midrule
+\multirow{2}{*}{\shortstack[l]{\textbf{Track B1a: Agniel Sparse}\\($92\%$ unmeas., $R=8$)}}
+  & Global-CMI ($4/8$ false buys) & --- & --- & --- & $-1.99$ & $-2.17 \pm 0.35$ & Reference \\
+  & \textbf{CZ-Fluid Holm LCB ($0/8$ buys)} & --- & --- & --- & $\mathbf{-1.75}$ & $\mathbf{-1.75 \pm 0.25}$ & $+0.05$ ($[-0.48,+0.58]$, $0.844$) \\
+\midrule
+\multirow{2}{*}{\shortstack[l]{\textbf{Track B2: 4h+2h Gap}\\($19{,}930 \to 19{,}673$, $R=8$)}}
+  & Global-CMI (Vitals $-3.46$) & --- & --- & --- & $-2.74$ & $-2.65 \pm 0.29$ & Reference \\
+  & \textbf{CZ-Fluid (CZ + Fluid Backbone)} & --- & --- & --- & $-2.82$ & $-2.67 \pm 0.46$ & $-0.37$ ($[-1.00,+0.26]$, $0.238$) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\subsection{Yale New Haven ED ($560{,}486$ Visits): Scale Physics, Cross-Campus Transfer, and Fairness}
+\label{sec:res_yale}
+
+Table~\ref{tab:yale_dual} and Figure~\ref{fig:panel2}C--D summarize the Yale ED Dual-Track campaign:
+\begin{enumerate}
+  \item \textbf{Empirical Evidence for Leaf-Starvation Scale Physics (Track A):} On low-acuity \texttt{ESI 4--5} visits ($152{,}995$ visits, $1.88\%$ occult admission, $\sim 1{,}128$ positive training events per split), Naive Downweighting starves leaves (Auto-VOI NB drops from $6.90$ to $6.66$; AUPRC $0.3002 \to 0.2905$), whereas \texttt{FluidCollisionBackboneClassifier} automatically damps $\hat{\beta}_{\text{CZ}} = 0.12$ to protect rare leaves (recovering $6.93$ NB on CZ channels, $7.03 \pm 0.03$ with $42.4\%$ \texttt{CfBH} recall on \texttt{Global+Fluid}, and $6.62$ vs.\ $6.61$ at $q=20\%$). When training events expand $20$-fold on all-comers ($560{,}486$ visits, $\sim 22{,}300$ training admissions, evaluated on $460{,}486$ held-out visits per split), Naive Downweighting no longer starves (AUROC $0.9200$, matching \citealp{hong2018predicting}), and \texttt{FluidCollisionBackboneClassifier} automatically scales $\hat{\beta}_{\text{CZ}}$ up $4.7\times$ to $0.58$, cutting HIE pulls in half ($49.4\%$) while beating $100\%$ HIE querying ($231.59$ vs.\ $229.64$).
+  \item \textbf{Fairness-Blinded ESI 4--5 and Subgroup Audit (Track B3, Table~\ref{tab:fairness}):} Stripping all nine protected/socioeconomic fields from $X_{\text{base}}$ and enabling ESS-adaptive discovery focus $\kappa_{\text{disc}}^*$ with empirical martingale VOI eliminates the $2/8$ under-powered splits seen in Track A: Collision-Zone Discovery now selects both core medication channels (\texttt{meds\_gi\_infectious\_other} and \texttt{meds\_neuro\_psych\_pain}) on $6/6$ ($100\%$) of splits, raising Net Benefit $+57.9\%$ over blinded triage ($4.44 \to 7.01 \pm 0.07$ vs.\ $7.04 \pm 0.09$ \texttt{Global-CMI}; \texttt{CfBH} FDP $71.3\% \le 75\%$ target). Crucially, across all $11/11$ post-hoc audited race, language, and insurance subgroups (Table~\ref{tab:fairness}), blinded VOI routing delivers strictly positive Net Benefit gains ($\Delta\text{NB}>0$), with Non-English speakers gaining $+4.10$ per $1{,}000$ ($2.93 \to 7.03$, exceeding English $+2.44$) and Medicaid gaining $+2.67$ ($2.29 \to 4.96$, matching Commercial $+2.61$).
+  \item \textbf{Second Zero-Shot Multi-Hospital External Transfer (Track B4, Campus A $\to$ Campus B):} Training fairness-blinded models strictly on Yale Campus A ($322{,}283$ visits) and deploying zero-shot onto Campus B ($166{,}497$ external visits) confirms generalizability across institutional care settings. On external fast-track \texttt{ESI 4--5} ($N_{\text{ext}} = 51{,}205$), \texttt{CZ-Fluid} reaches $5.34$ NB (vs.\ $5.31$ \texttt{Global-CMI} and $3.42$ Triage; paired bootstrap vs.\ Triage $+1.53$, $95\%$ CI $[+0.92, +2.15]$, $p < 0.001$; AUROC $0.8260$). On external all-comers ($N_{\text{ext}} = 166{,}497$), our ESS-adaptive specialist tree capacity ($23$ leaves) enables \texttt{CZ-Fluid} ($254.02$ NB; AUROC $0.9100$, AUPRC $0.8281$) to \emph{statistically significantly outperform} both Stage-1 Triage ($+5.58$, $95\%$ CI $[+4.97, +6.27]$, $p < 0.001$) and \texttt{Global-CMI} (ensemble paired bootstrap $\mathbf{+0.40}$ per $1{,}000$, $95\%$ CI $[+0.04, +0.77]$, two-sided $\mathbf{p = 0.030}$).
+\end{enumerate}
+
+\begin{table}[h!]
+\centering
+\caption{Yale New Haven ED Dual-Track results across Track A (Hong et al.\ parity), Track B3 (fairness-blinded ESI 4--5), and Track B4 (zero-shot cross-campus transfer from Campus A to Campus B; paired bootstrap evaluates split-averaged external ensemble predictions, $B=1{,}000$).}
+\label{tab:yale_dual}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Cohort / Track} & \textbf{Stage-1} & \textbf{Global-CMI} & \textbf{CZ-Fluid} & \textbf{CZ-Fluid} & \textbf{Paired Boot.} & \textbf{Paired Boot.} \\
+ & \textbf{NB ($0\%$ q)} & \textbf{Auto NB} & \textbf{Auto NB} & \textbf{AUROC (AUPRC)} & \textbf{vs.\ Triage ($p$)} & \textbf{vs.\ Global-CMI ($p$)} \\
+\midrule
+\textbf{Track A:} ESI 4--5 Parity ($152{,}995$; $R=8$) & $5.01$ & $7.01 \pm 0.04$ & $6.93 \pm 0.12$ & $0.8586$ ($0.2999$) & (Naive: $6.66$) & ($q=20\%$: $6.62$ vs $6.61$) \\
+\textbf{Track A:} All-Comers Parity ($560{,}486$; $R=6$) & $226.51$ & $231.85 \pm 0.26$ & $231.59 \pm 0.33$ & $0.9176$ ($0.8493$) & ($100\%$ q: $229.64$) & ($\hat{\beta}_{\text{CZ}}=0.58$) \\
+\midrule
+\textbf{Track B3:} Blinded ESI 4--5 ($152{,}995$; $R=6$) & $4.44$ & $7.04 \pm 0.09$ & $7.01 \pm 0.07$ & $0.8570$ ($0.2549$) & ($6/6$ both meds) & ($11/11$ groups $\Delta\text{NB}>0$) \\
+\textbf{Track B4a:} Cross-Campus ESI 4--5 ($N_{\text{ext}}=51{,}205$) & $3.42$ & $5.31$ & $\mathbf{5.34}$ & $0.8260$ ($0.1614$) & $\mathbf{+1.53}$ ($\mathbf{<0.001}$) & $+0.06$ ($0.404$) \\
+\textbf{Track B4b:} Cross-Campus All-Comers ($N_{\text{ext}}=166{,}497$) & $249.96$ & $253.90$ & $\mathbf{254.02}$ & $0.9100$ ($0.8281$) & $\mathbf{+5.58}$ ($\mathbf{<0.001}$) & $\mathbf{+0.40}$ ($\mathbf{0.030}$) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Post-hoc algorithmic fairness audit on fairness-blinded Yale ESI 4--5 held-out visits ($72{,}995$/split, $R=6$, zero demographic or insurance features in $X_{\text{base}}$). All $11/11$ subgroups achieve positive Net Benefit gains ($\Delta\text{NB}>0$).}
+\label{tab:fairness}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Subgroup Stratum} & \textbf{Mean Test} $N$ & \textbf{Prevalence} & \textbf{Stage-1 NB} & \textbf{CZ-Fluid Auto NB} & $\Delta$\textbf{NB Gain} ($/1\text{k}$) & \textbf{Query Rate} \\
+\midrule
+\texttt{lang:English} & $67{,}682$ & $1.87\%$ & $4.56$ & $7.00$ & $\mathbf{+2.44}$ & $46.3\%$ \\
+\texttt{lang:Other (Non-English)} & $5{,}313$ & $2.05\%$ & $2.93$ & $7.03$ & $\mathbf{+4.10}$ & $54.3\%$ \\
+\midrule
+\texttt{race:White or Caucasian} & $33{,}044$ & $2.34\%$ & $7.16$ & $10.32$ & $\mathbf{+3.16}$ & $47.6\%$ \\
+\texttt{race:Black or African American} & $25{,}250$ & $1.49\%$ & $2.35$ & $4.05$ & $\mathbf{+1.70}$ & $46.4\%$ \\
+\texttt{race:Other} & $12{,}549$ & $1.55\%$ & $1.84$ & $4.77$ & $\mathbf{+2.93}$ & $48.4\%$ \\
+\texttt{race:Asian} & $1{,}020$ & $1.25\%$ & $1.77$ & $3.56$ & $\mathbf{+1.78}$ & $25.4\%$ \\
+\texttt{race:Patient Refused} & $780$ & $1.46\%$ & $3.31$ & $6.03$ & $\mathbf{+2.72}$ & $44.4\%$ \\
+\midrule
+\texttt{insurance:Medicaid} & $28{,}871$ & $1.70\%$ & $2.29$ & $4.96$ & $\mathbf{+2.67}$ & $52.1\%$ \\
+\texttt{insurance:Commercial} & $24{,}944$ & $1.76\%$ & $3.67$ & $6.27$ & $\mathbf{+2.61}$ & $43.6\%$ \\
+\texttt{insurance:Other} & $12{,}015$ & $0.49\%$ & $-0.70$ & $-0.34$ & $\mathbf{+0.36}$ & $31.6\%$ \\
+\texttt{insurance:Medicare} & $7{,}134$ & $5.13\%$ & $24.21$ & $29.90$ & $\mathbf{+5.68}$ & $63.2\%$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{fig_paper2_dual_track_hardened.png}
+\caption{Track B hardened clinical, causal, and fairness audit. \textbf{(A)} Emory zero-shot sepsis Net Benefit across Track A parity, Track B1b measured CPT bloodwork ($p=0.006$ vs.\ \texttt{Global-CMI}), and Track B2 strict $4\text{h}+2\text{h}$ gap. \textbf{(B)} Full Emory Vickers Decision Curve ($\tau \in [2\%, 15\%]$) confirming superiority over \texttt{Global-CMI}, Bedside Vitals, and Treat All across $\tau \in [4\%, 12.5\%]$. \textbf{(C)} Yale ESI 4--5 across Hong parity, fairness-blinded triage, and zero-shot Campus A $\to$ Campus B transfer ($N_{\text{ext}}=51{,}205$). \textbf{(D)} Post-hoc subgroup Net Benefit gain across all $11$ demographic, language, and insurance strata under fairness-blinded routing.}
+\label{fig:panel2}
+\end{figure}
+
+\section{Discussion, Clinical Governance, and Limitations}
+\label{sec:discussion}
+
+Our Dual-Track multi-hospital study highlights four methodological lessons for rare-event clinical AI:
+\begin{enumerate}
+  \item \textbf{True-Negative Abundance Distorts Both Channel Selection and External Transfer:} When $90\%\text{--}98\%$ of arrivals sit far below $\tau^*$, global log-loss discovery overweights subthreshold variations that frequently fail to generalize across hospitals. Replacing log-loss with the Schervish Beta-kernel score $S_{\tau^*,\kappa}$ and High-Signal False Positive Neyman sampling rescued diluted tie-breaker channels ($93.3\%$ vs.\ $13.3\%$) and produced our largest gains on \emph{external} hospital transfer (Beth Israel $\to$ Emory $+2.08$ vs.\ $+0.97$ under Track A; $+1.51$ paired bootstrap gain, $p=0.006$, under Track B1b; Yale Campus A $\to$ Campus B $+0.40$, $p=0.030$).
+  \item \textbf{Solving Leaf Starvation Requires Functional Decomposition, Not Sample Discarding:} Our $2\times 2$ ablations demonstrated why single-model reweighting fails on smaller or rarer cohorts ($1{,}128$ training events in Yale ESI 4--5; BIDMC $\to$ Emory) even while succeeding at $22{,}300$ events (Yale 560k). By locking in a $100\%$-sample unweighted Stage-2 backbone and gating a bottlenecked residual specialist via exact chain-rule Bernoulli MLE, \texttt{FluidCollisionBackboneClassifier} smoothly shrinks starved leaves back to $f_{\text{glob}}$ while opening $\hat{\beta}_{\text{CZ}}$ whenever genuine collision-zone heterogeneity and sample mass exist.
+  \item \textbf{Quantifying Observational EHR Confounding Transparently:} Track B1a vs.\ Track B1b revealed an important clinical-informatics finding: on the unrestricted PhysioNet 6-hour cohort where specialty assays like Lactate are $\sim 92\%$ unmeasured, blocking \texttt{drawn}$=1$ via single stochastic imputation introduces classical errors-in-variables attenuation, yet exposes that Global CMI makes harmful false purchases ($-2.17$ NB) while Collision-Zone safely abstains ($-1.75$ NB). Restricting to encounters with routine admission bloodwork drawn (Track B1b) isolates pure quantitative blood biology (Lactate and ABG) with statistically significant external gains ($p=0.006$), though prospective randomized or interventional test-ordering trials remain necessary to verify causal transportability to untested patients \citep{agniel2018biases}.
+  \item \textbf{Additional Limitations:} First, Hong et al.'s public IRB-deidentified Yale release omits patient MRNs (\texttt{pat\_mrn\_id}), precluding patient-level deduplication within campuses; cross-campus transfer (Campus A $\to$ Campus B) mitigates institutional overfitting, but prospective deployment requires longitudinal patient-level tracking. Second, under strict long-horizon lead gaps (Track B2, $\ge 8\text{h}$ before Sepsis-3 onset), baseline cross-hospital prevalence shift ($7.14\% \to 4.25\%$) keeps raw zero-shot Net Benefit negative until site-specific intercept recalibration is applied \citep{vancalster2019calibration}. Third, all analyses simulate selective acquisition retrospectively on observational repositories and are not validated for direct patient-care decisions without prospective clinical governance and institutional review.
+\end{enumerate}
+
+\section*{Author Contributions}
+
+Conceptualization, methodology, software, validation, formal statistical analysis, investigation, data curation, writing---original draft, and writing---review and editing: W.A.S. The author has read and agreed to the published version of the manuscript.
+
+\section*{Funding}
+
+This research received no external grant funding. Computational and agentic research platform access was supported in part by the \emph{Google Antigravity for Science} program.
+
+\section*{Institutional Review Board and Informed Consent Statement}
+
+Ethical review and approval and patient informed consent were not applicable because all empirical analyses examine synthetic generators or publicly available, fully de-identified benchmark repositories (the PhysioNet/Computing in Cardiology Challenge 2019 sepsis dataset \citep{goldberger2000physionet,reyna2020early} and the Yale New Haven Health System public ED triage dataset \citep{hong2018predicting}). Under U.S.\ federal regulations ($45\text{ CFR }46.102\text{(e)}$), secondary analysis of publicly available de-identified datasets does not constitute human subjects research and requires no Institutional Review Board approval. All analyses are retrospective methodological evaluations and are not cleared for direct bedside clinical decision-making without prospective clinical validation and institutional governance.
+
+\section*{Data and Code Availability Statement}
+
+{\raggedright The \texttt{collision-zone-ed} Python package (\texttt{pyproject.toml}), three-predicates discovery engine, \texttt{FluidCollisionBackboneClassifier}, \texttt{AgnielDeconfounder}, empirical martingale VOI / \texttt{CfBH} router, conversion and benchmark scripts, JSON result summaries (\texttt{paper2\_initial\_campaign\_summary.json}, \texttt{sim2\_leaf\_starvation\_summary.json}, and \texttt{paper2\_track\_b\_hardened\_summary.json}), and unit tests ($8/8$ passing) are openly available at \url{https://github.com/deesatzed/collision-zone-ed} and archived alongside the preprint submission. Both clinical datasets are publicly accessible via PhysioNet (\url{https://physionet.org/content/challenge-2019/}) and the Yale ED Admission Prediction repository (\url{https://github.com/yaleemmlc/admissionprediction}; \citealp{hong2018predicting}).\par}
+
+\section*{AI-Assisted Workflows Disclosure}
+
+Portions of the computational workflow---specifically bibliographic cross-checking, Python statistical pipeline implementation, numerical formula verification, and manuscript drafting---were conducted using \emph{Google Antigravity} powered by \emph{Gemini} models (no external scientific database APIs were invoked via automated database connectors). All study design decisions, mathematical proofs, empirical code executions, bibliographic citations, clinical interpretations, and final text were independently reviewed, verified, and approved by the human author, who takes full responsibility for the integrity and accuracy of this work.
+
+\section*{Acknowledgments}
+
+Computational and agentic research platform access was supported in part by the \emph{Google Antigravity for Science} program. We gratefully acknowledge the creators and maintainers of \texttt{PhysioNet} \citep{goldberger2000physionet}, the PhysioNet/CinC 2019 Challenge organizers \citep{reyna2020early}, the Yale New Haven Health System ED machine learning authors \citep{hong2018predicting}, \texttt{LightGBM} \citep{ke2017lightgbm}, and \texttt{scikit-learn} \citep{pedregosa2011scikit}.
+
+\section*{Conflicts of Interest}
+
+The author declares no conflicts of interest and no competing financial or non-financial interests.
+
+\appendix
+
+\section{Mathematical Proofs}
+\label{app:proofs}
+
+\begin{proof}[Proof of Theorem~\ref{thm:schervish}]
+\emph{Part 1.} For $\alpha = 1 + \kappa\tau^* > 1$ and $\beta = 1 + \kappa(1 - \tau^*) > 1$, the Beta density $w_{\tau^*,\kappa}(\tau) = \tau^{\alpha-1}(1-\tau)^{\beta-1}/B(\alpha,\beta)$ is continuous on $[0,1]$, vanishes at $\tau \in \{0,1\}$, and has log-derivative $(\alpha-1)/\tau - (\beta-1)/(1-\tau) = \kappa(\tau^* - \tau)/[\tau(1-\tau)]$, which vanishes uniquely at $\tau = \tau^*$ (global maximum). Substituting $w_{\tau^*,\kappa}$ into Eq.~\eqref{eq:schervish_general}:
+\begin{align*}
+  \int_p^1 (1-\tau) w_{\tau^*,\kappa}(\tau)\,d\tau &= \frac{B(\alpha,\beta+1)}{B(\alpha,\beta)}\int_p^1 \frac{\tau^{\alpha-1}(1-\tau)^{\beta}}{B(\alpha,\beta+1)}\,d\tau = \frac{\beta}{\alpha+\beta}\big(1 - I_p(\alpha,\beta+1)\big), \\
+  \int_0^p \tau w_{\tau^*,\kappa}(\tau)\,d\tau &= \frac{B(\alpha+1,\beta)}{B(\alpha,\beta)}\int_0^p \frac{\tau^{\alpha}(1-\tau)^{\beta-1}}{B(\alpha+1,\beta)}\,d\tau = \frac{\alpha}{\alpha+\beta} I_p(\alpha+1,\beta),
+\end{align*}
+using $B(\alpha,\beta+1)/B(\alpha,\beta) = \beta/(\alpha+\beta)$ and $B(\alpha+1,\beta)/B(\alpha,\beta) = \alpha/(\alpha+\beta)$, establishing Eq.~\eqref{eq:schervish_closed}.
+
+\emph{Part 2.} Let $g(\eta, p) = \mathbb{E}_{Y \sim \operatorname{Bern}(\eta)}[S_{\tau^*,\kappa}(Y,p)]$. Applying Leibniz's rule to Eq.~\eqref{eq:schervish_general} yields $\frac{\partial g(\eta,p)}{\partial p} = \eta(1-p)w_{\tau^*,\kappa}(p) - (1-\eta)p w_{\tau^*,\kappa}(p) = w_{\tau^*,\kappa}(p)(\eta - p)$. Since $w_{\tau^*,\kappa}(p) > 0$ on $(0,1)$, $g(\eta,p)$ is strictly increasing for $p < \eta$ and strictly decreasing for $p > \eta$, proving strict properness. By the tower property and Fundamental Theorem of Calculus,
+\[
+  \mathbb{E}[S_{\tau^*,\kappa}(Y,\eta_2) - S_{\tau^*,\kappa}(Y,\eta_1) \mid X_{\text{base}}, Z] = g(\eta_2,\eta_2) - g(\eta_2,\eta_1) = \int_{\eta_1}^{\eta_2} (\eta_2 - \tau) w_{\tau^*,\kappa}(\tau)\,d\tau.
+\]
+Whether $\eta_2 > \eta_1$ or $\eta_2 < \eta_1$, the integral is strictly positive whenever $\eta_2 \ne \eta_1$, proving Eq.~\eqref{eq:bregman_gain}.
+
+\emph{Part 3.} Expanding $g(\eta_1 + \delta, \eta_1 + \delta) - g(\eta_1 + \delta, \eta_1) = \int_{\eta_1}^{\eta_1+\delta}(\eta_1 + \delta - \tau)w(\tau)\,d\tau = \tfrac{1}{2}w(\eta_1)\delta^2 + o(\delta^2)$ as $\delta \to 0$ yields $\Theta(\eta_1^{-1}\delta^2)$ for $w_{\log}(\tau) = [\tau(1-\tau)]^{-1}$ versus $\Theta(\eta_1^{\kappa\tau^*}\delta^2)$ for $w_{\tau^*,\kappa}(\tau) \propto \tau^{\kappa\tau^*}(1-\tau)^{\kappa(1-\tau^*)}$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:hsfp_neyman}]
+\emph{Part 1.} Within each Phase-1 stratum $\mathcal{U}_h$ ($h=1,\dots,H$), without-replacement simple random sampling of size $n_h \ge 2$ gives inclusion probabilities $\pi_i = n_h/N_h = w_i^{-1}$, so $\mathbb{E}_{\text{II}}[\hat{G} \mid \mathcal{F}_{\text{I}}] = N^{-1}\sum_{h=1}^H \sum_{i \in \mathcal{U}_h} (N_h/n_h)\psi_i (n_h/N_h) = N^{-1}\sum_{i=1}^N \psi_i$ \citep{horvitz1952generalization,lumley2010complex}. Independence across strata yields $\operatorname{Var}_{\text{II}}(\hat{G} \mid \mathcal{F}_{\text{I}}) = N^{-2}\sum_{h=1}^H N_h^2(1 - n_h/N_h)S_{h,\text{I}}^2 / n_h$, unbiasedly estimated by $\widehat{V}_{\text{II}}$. Under unclustered SRS ($H=1, n_1=n_{\text{pilot}}, w_i=N/n_{\text{pilot}}$), $\widehat{V}_{\text{I}} = \frac{n_{\text{pilot}}}{n_{\text{pilot}}-1}\frac{(N/n_{\text{pilot}})(n_{\text{pilot}}-1)s^2}{N^2} = \frac{s^2}{N}$ and $\widehat{V}_{\text{II}} = (1 - \frac{n_{\text{pilot}}}{N})\frac{s^2}{n_{\text{pilot}}}$, summing identically to $s^2/n_{\text{pilot}}$.
+
+\emph{Part 2.} When all affordable channels $m \in \mathcal{A}_t$ satisfy $m \in \mathcal{H}_0(\mathcal{S}_{t-1})$, $\mu_{m,N} = \mathbb{E}[\psi_{i, m \mid \mathcal{S}_{t-1}}] \le 0$ implies $Z_m = \hat{G}_m / \widehat{V}_{\text{total},m}^{1/2} \le (\hat{G}_m - \mu_{m,N})/\widehat{V}_{\text{total},m}^{1/2} \leadsto \mathcal{N}(0,1)$, so each $p_m^{(t)} = 1 - \Phi(Z_m)$ is asymptotically super-uniform on $[0,1]$. Holm's step-down procedure \citep{holm1979simple} rejects at least one $m \in \mathcal{A}_t$ iff $\min_{m \in \mathcal{A}_t} p_m^{(t)} < \alpha / |\mathcal{A}_t|$; by Boole's inequality, $\limsup_{N\to\infty}\mathbb{P}(\text{any null selected}) \le \sum_{m \in \mathcal{A}_t} \alpha / |\mathcal{A}_t| = \alpha$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:fluid}]
+\emph{Part 1.} Let $d_i = D_{\text{KL}}(\operatorname{Bern}(\tau^*) \| \operatorname{Bern}(\sigma(\ell_{1,i}))) \ge 0$. By Gibbs' inequality, $d_i > 0$ whenever $\sigma(\ell_{1,i}) \ne \tau^*$. Hence $M'(\kappa) = -2\sum_{i=1}^{N_{\text{train}}} d_i e^{-2\kappa d_i} < 0$ strictly on $[0, \infty)$, with $M(0) = N_{\text{train}}$. Continuity and the intermediate value theorem yield a unique root $\kappa^* \in (0, \kappa_{\max})$ whenever $M(\kappa_{\max}) < M_{\min} < N_{\text{train}}$.
+
+\emph{Part 2.} For $f_i = f_{\text{glob},i} + \pi_i \Delta_{\text{CZ},i}$ and $\mathcal{L}(y_i, f_i) = -y_i f_i + \log(1 + e^{f_i})$, $\frac{\partial \mathcal{L}}{\partial f_i} = \sigma(f_i) - y_i$ and $\frac{\partial^2 \mathcal{L}}{\partial f_i^2} = \sigma(f_i)(1 - \sigma(f_i))$. By the chain rule with $\frac{\partial f_i}{\partial \Delta_{\text{CZ},i}} = \pi_i$, $g_i = \pi_i(\sigma(f_i) - y_i)$ and $h_i = \pi_i^2 \sigma(f_i)(1 - \sigma(f_i)) > 0$. Setting the pointwise conditional expectation $\mathbb{E}[\pi(X,Z)(\sigma(f(X,Z)) - Y) \mid X=x, Z=z] = \pi(x,z)(\sigma(f(x,z)) - \eta(x,z)) = 0$ and dividing by $\pi(x,z) > 0$ yields $\sigma(f^*(x,z)) = \eta(x,z) = \mathbb{P}(Y=1 \mid X=x, Z=z)$ uniquely.
+
+\emph{Part 3.} Minimizing the second-order leaf surrogate $\sum_{i \in R_\ell} (g_i \gamma + \tfrac{1}{2} h_i \gamma^2) + \tfrac{1}{2}\tilde{\lambda}\gamma^2$ yields Eq.~\eqref{eq:gated_newton}. Because $|p_i - y_i| \le 1$ and $\sum_{i \in R_\ell} \pi_i^2 p_i(1-p_i) \ge 0$, the exact bound $|\hat{\gamma}_\ell^{\text{CZ}}| \le \tilde{\lambda}^{-1}\sum_{i \in R_\ell} \pi_i$ holds unconditionally for all $p_i \in (0,1)$, so $\hat{\gamma}_\ell^{\text{CZ}} \to 0$ whenever total leaf gate mass $\sum_{i \in R_\ell} \pi_i \to 0$. Moreover, on any bounded-size leaf ($|R_\ell| \le L_{\max}$) with $p_i \in [\varepsilon, 1-\varepsilon]$, Cauchy--Schwarz gives $\sum_{i \in R_\ell} \pi_i \le (L_{\max}/[\varepsilon(1-\varepsilon)])^{1/2}(\sum_{i \in R_\ell} \pi_i^2 p_i(1-p_i))^{1/2} \to 0$ as collision Fisher curvature vanishes, smoothly preserving $f(x,z) \to f_{\text{glob}}(x,z)$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:emp_voi_agniel}]
+\emph{Part 1.} Fix $p_1 \in (0,1)$ and $\{\delta_{b,r}\}_{r=1}^K \subset \mathbb{R}$. The function $\phi(\mu) = K^{-1}\sum_{r=1}^K \sigma(\operatorname{logit}(p_1) + \mu + \delta_{b,r})$ has $\phi'(\mu) = K^{-1}\sum_{r=1}^K \sigma(\cdot)(1-\sigma(\cdot)) > 0$, $\lim_{\mu\to-\infty}\phi(\mu) = 0$, and $\lim_{\mu\to+\infty}\phi(\mu) = 1$, ensuring a unique root $\mu^*(p_1) \in \mathbb{R}$ with $K^{-1}\sum_{r=1}^K \tilde{P}_{2,r} = p_1$. Because $L^*(p) = \min\{p C_{\text{FN}}, (1-p)C_{\text{FP}}\}$ is concave on $[0,1]$, Jensen's inequality gives $K^{-1}\sum_{r=1}^K L^*(\tilde{P}_{2,r}) \le L^*(K^{-1}\sum_{r=1}^K \tilde{P}_{2,r}) = L^*(p_1)$, proving $\widehat{\operatorname{VOI}}_{\text{emp}}(p_1) \ge 0$.
+
+\emph{Part 2.} For any measurable set $A$, decomposing over $D \in \{0,1\}$ and applying $Y \perp Z \mid (X_{\text{base}}, D=1)$, $Z^{\text{imp}} \perp (Y,D) \mid X_{\text{base}}$, and $P(Z^{\text{imp}} \in A \mid X_{\text{base}}) = P(Z \in A \mid X_{\text{base}}, D=1)$ gives
+\begin{align*}
+  P(\tilde{Z} \in A, Y=1 \mid X_{\text{base}}) &= P(Z \in A \mid X_{\text{base}}, D=1) P(Y=1, D=1 \mid X_{\text{base}}) \\
+  &\quad + P(Z^{\text{imp}} \in A \mid X_{\text{base}}) P(Y=1, D=0 \mid X_{\text{base}}) \\
+  &= P(Z \in A \mid X_{\text{base}}, D=1)\, P(Y=1 \mid X_{\text{base}}).
+\end{align*}
+Summing over $Y \in \{0,1\}$ similarly gives $P(\tilde{Z} \in A \mid X_{\text{base}}) = P(Z \in A \mid X_{\text{base}}, D=1)$, hence $P(\tilde{Z} \in A, Y=1 \mid X_{\text{base}}) = P(\tilde{Z} \in A \mid X_{\text{base}}) P(Y=1 \mid X_{\text{base}})$, i.e., $\tilde{Z} \perp Y \mid X_{\text{base}}$.
+\end{proof}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

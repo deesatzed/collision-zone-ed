@@ -1,0 +1,47 @@
+{
+  "auditor": "preprint-blind-auditor",
+  "target_server": "arxiv",
+  "verdict": "PASS",
+  "summary": "Independent cold screening audit of main.tex, references.bib, both figures, and the archived JSON experiment summaries confirms mathematical rigor across Theorems 1-2, Propositions 1-2, and Appendix A, high numerical fidelity across the abstract, text, Tables 1-4, and Figures 1-2, and full compliance with arXiv/Preprints.org governance standards. Sole human authorship, AI-Assisted Workflows Disclosure (Google Antigravity/Gemini with explicit human verification), Google Antigravity for Science acknowledgment, retrospective de-identified IRB exemption (45 CFR 46.102(e)) with clinical non-clearance disclaimers, 33/33 bibliography completeness, and open code/data availability are all satisfied with zero blockers.",
+  "blockers": [],
+  "warnings": [
+    {
+      "id": "W1",
+      "category": "TABLE_CLARITY",
+      "location": "main.tex:L302",
+      "detail": "In Table 2 (Track B1b), the entry 'vs. Base: +1.75 (p=0.008)' sits on the 'Stage-1 Bedside Vitals (0% q)' row under the 'Emory Paired Boot. vs. Global-CMI' column; labeling it explicitly as 'CZ-Fluid vs. Base: +1.75 (p=0.008)' or moving it to a table note would prevent misreading the comparator pair."
+    },
+    {
+      "id": "W2",
+      "category": "NUMERICAL_PROVENANCE",
+      "location": "main.tex:L277,L299",
+      "detail": "The Track A Emory split-level win count ('9/10 splits won') is consistent with the reported aggregate mean/SE, but paper2_initial_campaign_summary.json archives only split-aggregated statistics (mean, SD, SE, 95% CI) rather than per-split arrays, so this specific count cannot be independently recomputed from the summary JSON alone."
+    },
+    {
+      "id": "W3",
+      "category": "NOTATION_PRECISION",
+      "location": "main.tex:L78-L81",
+      "detail": "Section 2 defines per-encounter query cost c_query 'in units of C_FP' while Eq. (1) subtracts (c_query / C_FN) Q_i; this is exact under the standard normalization C_FP = 1 used in the implementation, and stating 'in the same cost units as C_FP and C_FN' (or noting C_FP = 1) would make dimensional invariance explicit."
+    },
+    {
+      "id": "W4",
+      "category": "ROUNDING_AND_FORMATTING",
+      "location": "main.tex:L324,fig_paper2_three_predicates_ws4tb.png,fig_paper2_dual_track_hardened.png",
+      "detail": "Two minor polish items: (a) Track B3 relative Net Benefit gain '+57.9%' (4.44 -> 7.01) reflects rounded 2-decimal means rather than unrounded JSON means (4.4434 -> 7.0053, +57.7%); (b) Figure 1A and Figure 2B use plain ASCII math labels ('tau*', 'w_CZ(p)', 'pi_kappa*(p)', 'tau (%)') rather than typeset Greek symbols, though all figure elements are accurate, legible, and free of clipping."
+    }
+  ],
+  "checked_files": [
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_stage/manuscript/main.tex",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_stage/manuscript/references.bib",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_stage/manuscript/fig_paper2_three_predicates_ws4tb.png",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_stage/manuscript/fig_paper2_dual_track_hardened.png",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_initial_campaign_summary.json",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/sim2_leaf_starvation_summary.json",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_track_b_hardened_summary.json",
+    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/verify_paper2_math.py"
+  ],
+  "manuscript_file": null,
+  "manuscript_sha256": "46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10",
+  "file_count": 5,
+  "recorded_at": "2026-11-22T22:13:16.563284+00:00"
+}

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rescuing Diagnostic Signal from True-Negative Abundance — Wayne A. Satz, MD</title>
+  <meta name="description" content="High-Signal False Positives, Collision-Zone Feature Acquisition, and KL-Gated Residual Learning across 600,154 acute-care encounters from 5 hospitals." />
+
+  <!-- Open Graph / Social Media Preview -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Rescuing Diagnostic Signal from True-Negative Abundance" />
+  <meta property="og:description" content="Schervish Beta-kernel discovery, High-Signal False Positive pilots, and KL-Gated Residual Modulation validated across 600,154 sepsis and ED triage encounters from 5 hospitals." />
+  <meta property="og:url" content="https://deesatzed.github.io/collision-zone-ed/" />
+  <meta property="og:image" content="https://deesatzed.github.io/collision-zone-ed/og-card.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Rescuing Diagnostic Signal from True-Negative Abundance" />
+  <meta name="twitter:description" content="Solving the True-Negative singularity & GBDT leaf starvation in acute-care risk prediction across 600,154 encounters (Beth Israel → Emory & Yale ED)." />
+  <meta name="twitter:image" content="https://deesatzed.github.io/collision-zone-ed/og-card.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --paper: #f8f7f3;
+      --paper-alt: #f0eee7;
+      --surface: #ffffff;
+      --ink: #111827;
+      --ink-secondary: #374151;
+      --ink-muted: #525d6d;
+      --rule: #ddd8cc;
+      --rule-strong: #bdb6a7;
+      --emerald: #047857;
+      --emerald-deep: #065f46;
+      --emerald-tint: #ecfdf5;
+      --cobalt: #1d4ed8;
+      --crimson: #b91c1c;
+      --amber: #b45309;
+      --font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+      --shadow-soft: 0 10px 30px -12px rgba(17, 24, 39, 0.08), 0 2px 6px -1px rgba(17, 24, 39, 0.04);
+      --radius: 10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    ::selection {
+      background: #a7f3d0;
+      color: var(--ink);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-color: var(--rule-strong) var(--paper);
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: var(--emerald-deep);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    a:hover {
+      color: var(--ink);
+    }
+
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--emerald);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* Navigation Bar */
+    .topbar {
+      border-bottom: 1px solid var(--rule);
+      background: rgba(248, 247, 243, 0.92);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 60px;
+    }
+
+    .brand {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    .nav-links a {
+      color: var(--ink-secondary);
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--emerald-deep);
+    }
+
+    /* Editorial Hero */
+    header.hero {
+      padding: 68px 0 54px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.15rem, 3.8vw, 3.25rem);
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      margin: 0 0 22px;
+      text-wrap: balance;
+    }
+
+    .subtitle {
+      font-size: 1.08rem;
+      color: var(--ink-secondary);
+      max-width: 62ch;
+      margin: 0 0 24px;
+      line-height: 1.62;
+    }
+
+    .byline {
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      margin-bottom: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .byline strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--emerald-deep);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #044e3b;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--rule-strong);
+    }
+
+    .btn-secondary:hover {
+      background: var(--paper-alt);
+      color: var(--ink);
+    }
+
+    /* Interactive Threshold Explorer */
+    .explorer {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .explorer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .explorer-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .explorer-readout {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--emerald-deep);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .explorer svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .explorer-controls {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .slider-row label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--emerald-deep);
+      cursor: pointer;
+    }
+
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--rule-strong);
+      background: var(--paper);
+      color: var(--ink-secondary);
+      cursor: pointer;
+    }
+
+    .preset-btn[aria-pressed="true"] {
+      background: var(--emerald-tint);
+      border-color: var(--emerald);
+      color: var(--emerald-deep);
+    }
+
+    .explorer-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+    }
+
+    .leg-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .leg-swatch {
+      width: 14px;
+      height: 3px;
+      display: inline-block;
+      border-radius: 2px;
+    }
+
+    /* Evidence Ledger Strip (Editorial Table, not SaaS KPI cards) */
+    .ledger {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-bottom: 1px solid var(--rule);
+      background: var(--surface);
+    }
+
+    .ledger-cell {
+      padding: 24px 22px;
+      border-right: 1px solid var(--rule);
+    }
+
+    .ledger-cell:last-child {
+      border-right: none;
+    }
+
+    .ledger-val {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ledger-val.accent {
+      color: var(--emerald-deep);
+    }
+
+    .ledger-desc {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+      line-height: 1.45;
+    }
+
+    /* Sections */
+    section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    section.alt {
+      background: var(--paper-alt);
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(1.65rem, 2.5vw, 2.15rem);
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+      margin: 0 0 14px;
+      text-wrap: balance;
+    }
+
+    .section-lead {
+      font-size: 1.02rem;
+      color: var(--ink-secondary);
+      max-width: 70ch;
+      margin: 0 0 36px;
+    }
+
+    /* Three Predicates Editorial Columns */
+    .predicates {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 32px;
+      border-top: 1px solid var(--rule-strong);
+      padding-top: 28px;
+    }
+
+    .predicate h3 {
+      font-family: var(--font-display);
+      font-size: 1.24rem;
+      font-weight: 600;
+      margin: 0 0 10px;
+      line-height: 1.28;
+    }
+
+    .predicate p {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+      color: var(--ink-secondary);
+    }
+
+    .formula-line {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--ink);
+      background: var(--paper-alt);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--rule);
+      overflow-x: auto;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 32px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-muted);
+      background: var(--paper-alt);
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--rule-strong);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink-secondary);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    td.num, th.num {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    td.strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    td.win {
+      color: var(--emerald-deep);
+      font-weight: 700;
+    }
+
+    .table-note {
+      font-size: 0.84rem;
+      color: var(--ink-muted);
+      margin: -18px 0 36px;
+      max-width: 78ch;
+    }
+
+    /* Figures */
+    .figure-plate {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 28px;
+    }
+
+    .figure-plate img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .figure-plate figcaption {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule);
+      font-size: 0.88rem;
+      color: var(--ink-secondary);
+      line-height: 1.55;
+    }
+
+    /* Human-AI Provenance & Google Antigravity for Science */
+    .credit-box {
+      background: var(--surface);
+      border: 1px solid var(--rule-strong);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .credit-box h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin: 0 0 8px;
+    }
+
+    .credit-box p {
+      margin: 0;
+      font-size: 0.94rem;
+      color: var(--ink-secondary);
+      max-width: 68ch;
+    }
+
+    .seal-meta {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      background: var(--paper-alt);
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      line-height: 1.6;
+    }
+
+    /* BibTeX */
+    .bib-wrap {
+      position: relative;
+      background: #141923;
+      color: #e5e7eb;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      overflow-x: auto;
+    }
+
+    .bib-wrap pre {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .copy-bib {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f9fafb;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .copy-bib:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    footer {
+      padding: 44px 0 60px;
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+    }
+
+    .footer-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .footer-disclaimer {
+      max-width: 72ch;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ledger-cell:nth-child(2) { border-right: none; }
+      .ledger-cell:nth-child(1), .ledger-cell:nth-child(2) { border-bottom: 1px solid var(--rule); }
+      .predicates { grid-template-columns: 1fr; gap: 26px; }
+      .credit-box { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 0 18px; }
+      .ledger { grid-template-columns: 1fr; }
+      .ledger-cell { border-right: none; border-bottom: 1px solid var(--rule); }
+      .ledger-cell:last-child { border-bottom: none; }
+      .nav-links { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar" aria-label="Primary navigation">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#">collision-zone-ed</a>
+      <div class="nav-links">
+        <a href="#predicates">Three Predicates</a>
+        <a href="#results">Clinical Results</a>
+        <a href="#figures">Figures</a>
+        <a href="#provenance">Human–AI Provenance</a>
+        <a href="#cite">Cite</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Rescuing Diagnostic Signal from True-Negative Abundance</h1>
+        <p class="subtitle">
+          High-Signal False Positives, Collision-Zone Feature Acquisition, and KL-Gated Residual Learning in Acute Care — resolving the log-loss singularity and decision-tree leaf starvation across 600,154 clinical encounters from five hospitals.
+        </p>
+        <div class="byline">
+          <strong>Wayne A. Satz, MD</strong> &middot; Department of Emergency Medicine, Lewis Katz School of Medicine at Temple University, Philadelphia, PA &middot; <a href="mailto:satzwa@temple.edu">satzwa@temple.edu</a>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="https://github.com/deesatzed/collision-zone-ed/blob/main/manuscript/main.pdf">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Read Manuscript PDF
+          </a>
+          <a class="btn btn-secondary" href="https://github.com/deesatzed/collision-zone-ed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            GitHub Repository
+          </a>
+          <button class="btn btn-secondary" type="button" id="hero-copy-bib">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="hero-copy-label">Copy BibTeX</span>
+          </button>
+        </div>
+      </div>
+
+      <aside class="explorer" aria-label="Interactive threshold kernel explorer">
+        <div class="explorer-head">
+          <h2 class="explorer-title">Collision-Zone Kernel Explorer</h2>
+          <span class="explorer-readout" id="tau-readout">&tau;* = 6.25%</span>
+        </div>
+        <svg id="kernel-svg" viewBox="0 0 460 230" role="img" aria-label="Comparison of Log-Loss singularity versus Schervish Beta-Kernel and Fluid KL-Gate around clinical threshold tau-star"></svg>
+        <div class="explorer-controls">
+          <div class="slider-row">
+            <label for="tau-slider">Action Threshold &tau;*</label>
+            <input id="tau-slider" type="range" min="2.5" max="20" step="0.25" value="6.25" />
+          </div>
+          <div class="preset-row" role="group" aria-label="Clinical cohort presets">
+            <button type="button" class="preset-btn" data-tau="4.0" aria-pressed="false">Yale ESI 4–5 (4.0%)</button>
+            <button type="button" class="preset-btn" data-tau="6.25" aria-pressed="true">Sepsis 6h (6.25%)</button>
+            <button type="button" class="preset-btn" data-tau="15.0" aria-pressed="false">Yale All-Comers (15.0%)</button>
+          </div>
+          <div class="explorer-legend">
+            <span class="leg-item"><span class="leg-swatch" style="background:#b91c1c;"></span>Log-Loss 1/[p(1&minus;p)]</span>
+            <span class="leg-item"><span class="leg-swatch" style="background:#1d4ed8;"></span>Schervish Beta-Kernel w<sub>&tau;*,&kappa;</sub>(p)</span>
+            <span class="leg-item"><span class="leg-swatch" style="background:#047857;"></span>Fluid KL Gate &pi;<sub>&kappa;*</sub>(p)</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <div class="ledger" aria-label="Headline clinical benchmarks">
+    <div class="ledger-cell">
+      <div class="ledger-val">600,154</div>
+      <div class="ledger-desc">Acute-care encounters audited across 5 hospitals (Beth Israel, Emory, and 3 Yale EDs).</div>
+    </div>
+    <div class="ledger-cell">
+      <div class="ledger-val accent">+1.51 NB</div>
+      <div class="ledger-desc">Beth Israel &rarr; Emory zero-shot external gain on pure CPT-costed blood draws (95% CI [+0.47, +2.52], <em>p</em> = 0.006).</div>
+    </div>
+    <div class="ledger-cell">
+      <div class="ledger-val accent">93.3% vs 13.3%</div>
+      <div class="ledger-desc">Tie-breaker channel recovery under 94% true-negative dilution (3.3% null FWER across 30 replicates).</div>
+    </div>
+    <div class="ledger-cell">
+      <div class="ledger-val accent">11 / 11 Strata</div>
+      <div class="ledger-desc">Fairness-blinded Yale ESI 4–5 race, language &amp; insurance subgroups with &Delta;NB &gt; 0 (+4.10 Non-English, +2.67 Medicaid).</div>
+    </div>
+  </div>
+
+  <main>
+    <section id="predicates">
+      <div class="wrap">
+        <h2>Why Rare-Event Clinical Models Lose Diagnostic Signal — and Three Predicates That Rescue It</h2>
+        <p class="section-lead">
+          In emergency medicine and ICU triage, 90%–98% of arrivals are routine discharges far below the clinical action threshold &tau;*. Standard global conditional mutual information (log-loss) devotes unbounded curvature near p &rarr; 0, while naive row downweighting collapses effective sample size and starves decision-tree leaves.
+        </p>
+
+        <div class="predicates">
+          <article class="predicate">
+            <h3>1. Eliminate the True-Negative Singularity</h3>
+            <p>
+              By Schervish's integral representation, log-loss weights decision thresholds by w<sub>log</sub>(&tau;) = [&tau;(1&minus;&tau;)]<sup>&minus;1</sup> &rarr; &infin; as &tau; &rarr; 0<sup>+</sup>, letting subthreshold decoys outscore bedside tie-breakers. Replacing w<sub>log</sub> with a Beta(1+&kappa;&tau;*, 1+&kappa;(1&minus;&tau;*)) kernel yields a closed-form strictly proper score peaking at &tau;* with zero weight at 0 and 1.
+            </p>
+            <div class="formula-line">S(y,p) = &minus;y[&beta;/(&alpha;+&beta;)][1&minus;I<sub>p</sub>(&alpha;,&beta;+1)] &minus; (1&minus;y)[&alpha;/(&alpha;+&beta;)]I<sub>p</sub>(&alpha;+1,&beta;)</div>
+          </article>
+
+          <article class="predicate">
+            <h3>2. Target High-Signal False Positives in Pilots</h3>
+            <p>
+              Beyond rare True Positives, the most informative historical controls are <em>High-Signal False Positives</em> — non-events whose baseline triage risk collides with True Positives near &tau;* (e.g., pain-driven tachycardia mimicking sepsis). Constrained Neyman allocation concentrates two-phase pilot budgets in this collision zone with exact Horvitz–Thompson two-phase variance and Holm LCB stopping.
+            </p>
+            <div class="formula-line">&sigma;&#771;<sub>h,CZ</sub> = w<sub>&tau;*,&kappa;</sub>(p&#772;<sub>h</sub>) &middot; p&#772;<sub>h</sub>(1&minus;p&#772;<sub>h</sub>)(|y<sub>h</sub>&minus;p&#772;<sub>h</sub>| + 0.15) + 10<sup>&minus;3</sup></div>
+          </article>
+
+          <article class="predicate">
+            <h3>3. Modulate Residuals Without Leaf Starvation</h3>
+            <p>
+              Instead of discarding 90%+ of training rows, <code>FluidCollisionBackboneClassifier</code> keeps a 100%-sample unweighted global Stage-2 backbone and adds a bottlenecked collision specialist modulated by a smooth probabilistic-OR Bernoulli KL gate under canonical Bernoulli MLE. Starved leaves shrink unconditionally back to the global Stage-2 backbone rather than zero.
+            </p>
+            <div class="formula-line">f(x,z) = &alpha;<sub>0</sub> + &beta;<sub>glob</sub> f<sub>glob</sub>(x,z) + &beta;<sub>CZ</sub> &pi;<sub>union</sub>(x,z) &Delta;<sub>CZ</sub>(&ell;<sub>1</sub>, f<sub>glob</sub>, z<sub>S</sub>)</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="results" class="alt">
+      <div class="wrap">
+        <h2>Dual-Track Multi-Hospital Evidence</h2>
+        <p class="section-lead">
+          Every benchmark is evaluated under both <strong>Track A (Published Comparator Parity)</strong> and <strong>Track B (Hardened Clinical, Causal, Fairness-Blinded &amp; Cross-Campus External Transfer)</strong> with 1,000-replicate patient-level paired bootstraps and nonparametric empirical martingale Value-of-Information (VOI) routing.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Benchmark &amp; Track</th>
+                <th>Stage-1 Baseline</th>
+                <th class="num">Global-CMI Auto NB</th>
+                <th class="num">CZ-Fluid Auto NB</th>
+                <th class="num">External Paired Boot. vs Global-CMI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="strong">Sim 1: 94% TN Dilution (30 reps)</td>
+                <td>&minus;0.08 NB</td>
+                <td class="num">&minus;0.36 &plusmn; 0.25 (13.3% rec.)</td>
+                <td class="num win">+1.73 &plusmn; 0.25 (93.3% rec.)</td>
+                <td class="num">3.3% null FWER (&le;5%)</td>
+              </tr>
+              <tr>
+                <td class="strong">Sepsis Track A: BIDMC &rarr; Emory 6h Parity (19,696 ext.)</td>
+                <td>&minus;1.59 &plusmn; 0.27</td>
+                <td class="num">+0.97 &plusmn; 0.55</td>
+                <td class="num win">+2.08 &plusmn; 0.20</td>
+                <td class="num">2.14&times; Global-CMI (3.20&times; Naive)</td>
+              </tr>
+              <tr>
+                <td class="strong">Sepsis Track B1b: Measured CPT Bloodwork (6,463 ext.)</td>
+                <td>+2.31 &plusmn; 0.55</td>
+                <td class="num">+2.84 &plusmn; 0.59</td>
+                <td class="num win">+3.15 &plusmn; 0.48</td>
+                <td class="num win">+1.51 [+0.47, +2.52], <em>p</em> = 0.006</td>
+              </tr>
+              <tr>
+                <td class="strong">Sepsis Track B1a: Agniel Sparse Stress (92% unmeasured)</td>
+                <td>&minus;1.75 &plusmn; 0.25</td>
+                <td class="num">&minus;2.17 &plusmn; 0.35 (4/8 false buys)</td>
+                <td class="num win">&minus;1.75 &plusmn; 0.25 (0/8 buys)</td>
+                <td class="num">+0.05 [&minus;0.48, +0.58], <em>p</em> = 0.844</td>
+              </tr>
+              <tr>
+                <td class="strong">Yale Track B3: Fairness-Blinded ESI 4–5 (152,995 visits)</td>
+                <td>+4.44 NB</td>
+                <td class="num">+7.04 &plusmn; 0.09</td>
+                <td class="num">+7.01 &plusmn; 0.07</td>
+                <td class="num win">11/11 subgroups &Delta;NB &gt; 0</td>
+              </tr>
+              <tr>
+                <td class="strong">Yale Track B4a: Campus A &rarr; B ESI 4–5 (51,205 ext.)</td>
+                <td>+3.42 NB</td>
+                <td class="num">+5.31</td>
+                <td class="num win">+5.34</td>
+                <td class="num">+0.06 (<em>p</em> = 0.404); +1.53 vs Triage (<em>p</em> &lt; 0.001)</td>
+              </tr>
+              <tr>
+                <td class="strong">Yale Track B4b: Campus A &rarr; B All-Comers (166,497 ext.)</td>
+                <td>+249.96 NB</td>
+                <td class="num">+253.90</td>
+                <td class="num win">+254.02</td>
+                <td class="num win">+0.40 [+0.04, +0.77], <em>p</em> = 0.030</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">
+          Net Benefit (NB) is reported per 1,000 encounters under each cohort's operational utility contract (&tau;* = 6.25% sepsis; &tau;* = 4.0% Yale ESI 4–5; &tau;* = 15.0% Yale All-Comers). Paired bootstrap differences evaluate 1,000 patient-level resamples of the split-averaged external ensemble predictions.
+        </p>
+      </div>
+    </section>
+
+    <section id="figures">
+      <div class="wrap">
+        <h2>Publication Figures</h2>
+        <p class="section-lead">
+          Mechanism verification, leaf-starvation scale physics across event counts, external Vickers Decision Curves, and post-hoc demographic/insurance fairness across all 11 strata.
+        </p>
+
+        <figure class="figure-plate">
+          <img src="assets/fig_paper2_three_predicates_ws4tb.png" alt="Four-panel figure showing Schervish kernel versus log-loss, synthetic dilution rescue, zero-shot Emory sepsis transfer, and leaf-starvation elimination across BIDMC and Yale EDs" loading="lazy" />
+          <figcaption>
+            <strong>Figure 1 — Mechanism &amp; Track A Multi-Hospital Overview.</strong> (A) Log-loss singularity vs. smooth Schervish Beta-kernel and Stage-2 Fluid KL gate peaking at &tau;* = 8%. (B) Synthetic dilution recovery (13.3% &rarr; 93.3%) and pilot High-Signal FP concentration (11.9% &rarr; 22.8%). (C) Zero-shot Emory external sepsis Net Benefit (N = 19,696): superadditive gain of <code>CZ-Fluid</code> (+2.08) over <code>Global-CMI</code> (+0.97) and starved Naive Downweighting (+0.65). (D) Eliminating leaf starvation across BIDMC, Yale ESI 4–5 (153k), and Yale All-Comers (560k).
+          </figcaption>
+        </figure>
+
+        <figure class="figure-plate">
+          <img src="assets/fig_paper2_dual_track_hardened.png" alt="Four-panel figure showing hardened Track B sepsis transfer, Emory Vickers Decision Curve, Yale fairness-blinded and cross-campus transfer, and all 11 fairness-blinded subgroup Net Benefit gains" loading="lazy" />
+          <figcaption>
+            <strong>Figure 2 — Track B Hardened Clinical, Causal &amp; Fairness Audit.</strong> (A) Zero-shot Emory transfer across PhysioNet parity, measured CPT bloodwork (<em>p</em> = 0.006 vs. <code>Global-CMI</code>), and strict 4h+2h lead gap. (B) Full Emory Vickers Decision Curve (&tau; &isin; [2%, 15%]). (C) Yale ESI 4–5 across Hong parity, fairness-blinded triage, and zero-shot Campus A &rarr; B transfer (N = 51,205). (D) Post-hoc subgroup Net Benefit gain across all 11 demographic, language, and insurance strata under fairness-blinded routing.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="provenance" class="alt">
+      <div class="wrap">
+        <h2>Human–AI Scientific Provenance &amp; Acknowledgments</h2>
+        <p class="section-lead">
+          Rather than obscuring intellectual contributions behind generic boilerplate, we document the explicit boundary between human clinical conceptualization and agentic AI mathematical, engineering, and verification support.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Research Phase</th>
+                <th>Human Scientist (Wayne A. Satz, MD)</th>
+                <th>Agentic AI Platform (Google Antigravity / Gemini)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="strong">1. Clinical Predicates &amp; Study Design</td>
+                <td>Originated the 3 core information predicates from Emergency Medicine practice (true-negative dilution, High-Signal False Positives, fluid anti-starvation) and directed the Dual-Track parity vs. hardened clinical audit.</td>
+                <td>Structured clinical hypotheses into testable synthetic regimes and benchmark specifications.</td>
+              </tr>
+              <tr>
+                <td class="strong">2. Mathematical Formalization</td>
+                <td>Reviewed assumptions, decision utility contracts (&tau;*, CMS CPT pricing, fairness constraints), and clinical interpretability.</td>
+                <td>Derived closed-form Schervish Beta-kernel theorems, KL-gated Newton leaf bounds, empirical martingale VOI proofs, and numerical verification checks.</td>
+              </tr>
+              <tr>
+                <td class="strong">3. Software &amp; Multi-Hospital Scale</td>
+                <td>Curated cohorts, clinical landmark rules, and deployment routing criteria.</td>
+                <td>Implemented <code>collision-zone-ed</code>, executed 600,154-encounter multi-hospital benchmarks, paired bootstraps, and Vickers decision curves.</td>
+              </tr>
+              <tr>
+                <td class="strong">4. Adversarial Red-Teaming &amp; Sealing</td>
+                <td>Directed statistical critique, Agniel informative-ordering tests, fairness blinding, and final editorial approval.</td>
+                <td>Executed de-confounded ablations, live Crossref/arXiv DOI verification (29/29 verified), independent blind screening audits, and SHA-256 sealing.</td>
+              </tr>
+              <tr>
+                <td class="strong">5. Authorship &amp; Accountability</td>
+                <td><strong>Sole author</strong> with full scientific, ethical, and clinical accountability.</td>
+                <td>Zero authorship; disclosed strictly as a computational and agentic research platform.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="credit-box">
+          <div>
+            <h3>Google Antigravity for Science</h3>
+            <p>
+              Computational and agentic research platform access was supported in part by the <strong>Google Antigravity for Science</strong> program. Portions of the computational workflow — bibliographic cross-checking, Python statistical pipeline implementation, numerical formula verification, and manuscript drafting — were conducted using <em>Google Antigravity</em> powered by <em>Gemini</em> models, with all study design decisions, proofs, empirical runs, citations, and final text independently reviewed and approved by the human author.
+            </p>
+          </div>
+          <div class="seal-meta">
+            <strong>Preprint Hard-Gate Seal</strong><br />
+            Status: SEALED_FOR_SUBMISSION<br />
+            Seal ID: e7dbe50fa705fb51ce1b5a66<br />
+            SHA-256: 46029af149089c6b...<br />
+            Citations: 33/33 (29/29 live DOI/arXiv)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cite">
+      <div class="wrap">
+        <h2>Citation &amp; Reproducibility</h2>
+        <p class="section-lead">
+          The complete Python package (<code>collision-zone-ed</code>), unit tests (8/8 passing), benchmark scripts, and archived JSON summaries are openly available on GitHub. Both underlying datasets are publicly accessible via <a href="https://physionet.org/content/challenge-2019/">PhysioNet 2019</a> and the <a href="https://github.com/yaleemmlc/admissionprediction">Yale ED Admission Prediction</a> repository.
+        </p>
+
+        <div class="bib-wrap">
+          <button class="copy-bib" type="button" id="copy-bib-btn">Copy BibTeX</button>
+          <pre id="bibtex-block">@misc{satz2026collisionzone,
+  author       = {Satz, Wayne A.},
+  title        = {Rescuing Diagnostic Signal from True-Negative Abundance: High-Signal False Positives, Collision-Zone Feature Acquisition, and KL-Gated Residual Learning in Acute Care},
+  year         = {2026},
+  howpublished = {Preprint, Department of Emergency Medicine, Lewis Katz School of Medicine at Temple University},
+  url          = {https://github.com/deesatzed/collision-zone-ed}
+}</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div class="footer-disclaimer">
+        <strong>Governance &amp; Clinical Disclaimer:</strong> All empirical analyses examine synthetic generators or publicly available, fully de-identified benchmark repositories (exempt from human subjects review under 45 CFR 46.102(e)). These retrospective methodological evaluations are not cleared for direct bedside clinical decision-making without prospective validation and institutional governance.
+      </div>
+      <div>
+        &copy; 2026 Wayne A. Satz, MD &middot; Supported in part by Google Antigravity for Science
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const svg = document.getElementById('kernel-svg');
+      const slider = document.getElementById('tau-slider');
+      const readout = document.getElementById('tau-readout');
+      const presets = document.querySelectorAll('.preset-btn');
+
+      const W = 460, H = 230;
+      const pad = { top: 18, right: 16, bottom: 34, left: 38 };
+      const plotW = W - pad.left - pad.right;
+      const plotH = H - pad.top - pad.bottom;
+
+      function xMap(pPct) { return pad.left + (pPct / 35) * plotW; }
+      function yMap(v) { return pad.top + (1 - Math.max(0, Math.min(1, v))) * plotH; }
+
+      function bernKL(tau, p) {
+        const eps = 1e-6;
+        const pc = Math.min(1 - eps, Math.max(eps, p));
+        return tau * Math.log(tau / pc) + (1 - tau) * Math.log((1 - tau) / (1 - pc));
+      }
+
+      function render(tauPct) {
+        const tau = tauPct / 100;
+        const kappaW = 24;
+        const kappaGate = 16;
+        const N = 160;
+        const pGrid = [];
+        for (let i = 0; i <= N; i++) {
+          pGrid.push(0.25 + (34.75 * i) / N);
+        }
+
+        // Log-loss density normalized to [0, 1] on grid
+        const wLogRaw = pGrid.map(pp => {
+          const p = pp / 100;
+          return 1 / (p * (1 - p));
+        });
+        const maxLog = Math.max(...wLogRaw);
+        const wLog = wLogRaw.map(v => v / maxLog);
+
+        // Schervish Beta(1 + k*tau, 1 + k*(1-tau)) density normalized to peak = 1 at tau
+        const wCz = pGrid.map(pp => {
+          const p = pp / 100;
+          const logRatio = kappaW * (tau * Math.log(p / tau) + (1 - tau) * Math.log((1 - p) / (1 - tau)));
+          return Math.exp(Math.max(-40, logRatio));
+        });
+
+        // Fluid KL gate exp(-k * D_KL(tau || p))
+        const piGate = pGrid.map(pp => Math.exp(-kappaGate * bernKL(tau, pp / 100)));
+
+        const toPath = (arr) => arr.map((v, idx) => `${idx === 0 ? 'M' : 'L'}${xMap(pGrid[idx]).toFixed(1)},${yMap(v).toFixed(1)}`).join(' ');
+
+        const tauX = xMap(tauPct).toFixed(1);
+        const ticksX = [0, 5, 10, 15, 20, 25, 30, 35];
+        const ticksY = [0, 0.5, 1.0];
+
+        svg.innerHTML = `
+          <rect x="${pad.left}" y="${pad.top}" width="${plotW}" height="${plotH}" fill="#fcfbf8" stroke="#ddd8cc" stroke-width="1" />
+          ${ticksY.map(ty => `
+            <line x1="${pad.left}" y1="${yMap(ty).toFixed(1)}" x2="${W - pad.right}" y2="${yMap(ty).toFixed(1)}" stroke="#e9e5dc" stroke-width="1" />
+            <text x="${pad.left - 8}" y="${(yMap(ty) + 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#525d6d" font-family="JetBrains Mono, monospace">${ty.toFixed(1)}</text>
+          `).join('')}
+          ${ticksX.map(tx => `
+            <line x1="${xMap(tx).toFixed(1)}" y1="${pad.top}" x2="${xMap(tx).toFixed(1)}" y2="${H - pad.bottom}" stroke="#f0eee7" stroke-width="1" />
+            <text x="${xMap(tx).toFixed(1)}" y="${H - pad.bottom + 15}" text-anchor="middle" font-size="10" fill="#525d6d" font-family="JetBrains Mono, monospace">${tx}%</text>
+          `).join('')}
+          <text x="${pad.left + plotW / 2}" y="${H - 4}" text-anchor="middle" font-size="10.5" fill="#374151" font-family="Source Sans 3, sans-serif">Predicted Risk p (%)</text>
+          <line x1="${tauX}" y1="${pad.top}" x2="${tauX}" y2="${H - pad.bottom}" stroke="#111827" stroke-width="1.25" stroke-dasharray="3 3" />
+          <path d="${toPath(wLog)}" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 4" />
+          <path d="${toPath(piGate)}" fill="none" stroke="#047857" stroke-width="2.1" stroke-dasharray="7 3 2 3" />
+          <path d="${toPath(wCz)}" fill="none" stroke="#1d4ed8" stroke-width="2.5" />
+          <circle cx="${tauX}" cy="${yMap(1).toFixed(1)}" r="4" fill="#1d4ed8" stroke="#ffffff" stroke-width="1.5" />
+        `;
+
+        readout.textContent = `\u03C4* = ${tauPct.toFixed(2)}%`;
+        presets.forEach(btn => {
+          btn.setAttribute('aria-pressed', Math.abs(parseFloat(btn.dataset.tau) - tauPct) < 0.05 ? 'true' : 'false');
+        });
+      }
+
+      slider.addEventListener('input', (e) => render(parseFloat(e.target.value)));
+      presets.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = parseFloat(btn.dataset.tau);
+          slider.value = v;
+          render(v);
+        });
+      });
+
+      render(6.25);
+
+      function copyBib(targetBtn, labelEl) {
+        const text = document.getElementById('bibtex-block').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = labelEl.textContent;
+          labelEl.textContent = 'Copied BibTeX';
+          setTimeout(() => { labelEl.textContent = orig; }, 1800);
+        });
+      }
+
+      const heroBtn = document.getElementById('hero-copy-bib');
+      const heroLbl = document.getElementById('hero-copy-label');
+      const bibBtn = document.getElementById('copy-bib-btn');
+      heroBtn.addEventListener('click', () => copyBib(heroBtn, heroLbl));
+      bibBtn.addEventListener('click', () => copyBib(bibBtn, bibBtn));
+    })();
+  </script>
+</body>
+</html>

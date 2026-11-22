@@ -1,0 +1,101 @@
+{
+  "overall_passed": true,
+  "sealed_for_submission": false,
+  "mode": "audit",
+  "target_server": "arxiv",
+  "manuscript_dir": "/Users/o2satz/antigravity/collision_zone_ed/manuscript",
+  "manuscript_file": null,
+  "gate_state_dir": "/Users/o2satz/antigravity/collision_zone_ed/.preprint_gate",
+  "manuscript_sha256": "46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10",
+  "file_count": 5,
+  "tracked_files": {
+    "fig_paper2_dual_track_hardened.png": "1083bafdcd983f839f3e8ba9a08921da1ffcb3d2ae93893c14d4425c49f3a524",
+    "fig_paper2_three_predicates_ws4tb.png": "9ac63624647b00fa331589af6d56c1e30f750d165ce9a54d1d3e02e1c93b2540",
+    "main.pdf": "274bf890eb9f63da6559a7eab39c4ba258fd207abe225bed3f74ad791c1f61f1",
+    "main.tex": "40ac565e075b79afaa916b6b07662066ebae0351669d279e486a73fe16abe7df",
+    "references.bib": "1188afcc4f1949ae47e7b9716c84e592f546b8896890f45f5934f3d646e6d94d"
+  },
+  "evaluated_at": "2026-11-22T22:06:51.554681+00:00",
+  "gates": {
+    "G1_AI_ATTRIBUTION": {
+      "gate": "G1_AI_ATTRIBUTION",
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        {
+          "code": "UNSPECIFIED_GEMINI_MODEL_VERSION",
+          "detail": "Manuscript mentions 'Gemini' generically without specifying the exact model version (e.g., 'Gemini 4 Argon' or 'Gemini 4 Carbon') recommended for computational reproducibility."
+        }
+      ]
+    },
+    "G2_SKILL_LICENSES": {
+      "gate": "G2_SKILL_LICENSES",
+      "passed": true,
+      "detected_resources": [],
+      "failures": [],
+      "warnings": []
+    },
+    "G3_CITATIONS": {
+      "gate": "G3_CITATIONS",
+      "passed": true,
+      "citation_summary": {
+        "mode": "online",
+        "bib_entry_count": 33,
+        "cited_key_count": 33,
+        "verified_count": 29
+      },
+      "failures": [],
+      "warnings": [
+        {
+          "code": "NON_ARTICLE_NO_DOI",
+          "key": "elkan2001foundations",
+          "detail": "Entry 'elkan2001foundations' (@inproceedings) has no DOI/PMID/arXiv ID; verify URL/report manually."
+        },
+        {
+          "code": "NON_ARTICLE_NO_DOI",
+          "key": "holm1979simple",
+          "detail": "Entry 'holm1979simple' (@misc) has no DOI/PMID/arXiv ID; verify URL/report manually."
+        },
+        {
+          "code": "NON_ARTICLE_NO_DOI",
+          "key": "cms2025clfs",
+          "detail": "Entry 'cms2025clfs' (@misc) has no DOI/PMID/arXiv ID; verify URL/report manually."
+        },
+        {
+          "code": "NON_ARTICLE_NO_DOI",
+          "key": "ke2017lightgbm",
+          "detail": "Entry 'ke2017lightgbm' (@inproceedings) has no DOI/PMID/arXiv ID; verify URL/report manually."
+        }
+      ]
+    },
+    "G4_SERVER_SCREENING": {
+      "gate": "G4_SERVER_SCREENING",
+      "server": "arxiv",
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    "G5_CLAIM_GROUNDING": {
+      "gate": "G5_CLAIM_GROUNDING",
+      "purely_computational": false,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    "G6_REVERIFICATION_SEAL": {
+      "gate": "G6_REVERIFICATION_SEAL",
+      "mode": "audit",
+      "passed": true,
+      "sealed": false,
+      "gate_state_dir": "/Users/o2satz/antigravity/collision_zone_ed/.preprint_gate",
+      "status": "PASS1_CLEAN_AWAITING_BLIND_REVIEW_AND_REVERIFY",
+      "failures": [],
+      "warnings": [
+        {
+          "code": "NOT_YET_SEALED",
+          "detail": "Pass-1 audit does NOT seal the manuscript. Invoke 'preprint-blind-auditor', record its SHA-256 attestation via record_blind_review.py, then run gate_runner.py --mode reverify."
+        }
+      ]
+    }
+  }
+}
