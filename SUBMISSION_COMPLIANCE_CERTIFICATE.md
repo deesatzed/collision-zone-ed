@@ -1,11 +1,11 @@
 # Preprint Submission Compliance Certificate
 
 - **Status**: `SEALED_FOR_SUBMISSION`
-- **Seal ID**: `bfc05436cab28141553452eb`
+- **Seal ID**: `0f13f7e605b7c79918d1d2fc`
 - **Target Preprint Server**: `medrxiv`
-- **Manuscript Merkle SHA-256**: `220c22f2a79092d2e847ca589306860468b636145ca0023dfcde697aa53c956c`
-- **Blind Review Attestation SHA-256**: `220c22f2a79092d2e847ca589306860468b636145ca0023dfcde697aa53c956c`
-- **Sealed Timestamp (UTC)**: `2026-11-24T20:16:31.818573+00:00`
+- **Manuscript Merkle SHA-256**: `10e434785cd81bad016625b9e39a3cb7a7fa18ba4f5a375c25d027fabfb0e54b`
+- **Blind Review Attestation SHA-256**: `10e434785cd81bad016625b9e39a3cb7a7fa18ba4f5a375c25d027fabfb0e54b`
+- **Sealed Timestamp (UTC)**: `2026-11-25T04:49:03.590887+00:00`
 
 ## Verified Hard Gates
 
@@ -20,8 +20,9 @@
 
 | File | SHA-256 |
 | :--- | :--- |
-| `fig_paper2_dual_track_hardened.png` | `1083bafdcd983f839f3e8ba9a08921da1ffcb3d2ae93893c14d4425c49f3a524` |
-| `fig_paper2_three_predicates_ws4tb.png` | `9ac63624647b00fa331589af6d56c1e30f750d165ce9a54d1d3e02e1c93b2540` |
-| `main.pdf` | `ff1acead9afdb0a881d51155b0188bd850b87f00c143f8648452d3d922f79c17` |
-| `main.tex` | `0f5f11ac431e4b06fc7415096ee1f622ddbe8ebcfec28bec1af8e20a663d4350` |
-| `references.bib` | `1188afcc4f1949ae47e7b9716c84e592f546b8896890f45f5934f3d646e6d94d` |
+| `fig1_mechanism_frontier_and_beta.png` | `d0b906abf485daf13792a8dac9faab746febee63b44196efe5cdb6d81052c3ec` |
+| `fig2_sepsis_transfer_afa_and_landmarks.png` | `81746e02088de5b8f48fd29c3e89ae2c4d6715522e500292e183ff711a021bbf` |
+| `fig3_calibration_and_yale_transfer.png` | `a5b36c577a1c2704edefebc3156ebe048827ddccce044e2cffcacc464a884e65` |
+| `main.pdf` | `76f108f3e71321e7b76e1928c6db39cccf58807403f60373a11a74d2d1eb292a` |
+| `main.tex` | `e93fad6830827d09cb8f5c5e4b20a4d283ebb309472ae5682a07c6384bcd0e0f` |
+| `references.bib` | `602cbed1a4f22c2841d8375c0df064d7e59b978b28f09d9e5e21c93ad8da1d05` |

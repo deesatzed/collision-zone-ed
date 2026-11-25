@@ -706,16 +706,16 @@
       <div class="ledger-desc">Acute-care encounters audited across 5 hospitals (Beth Israel, Emory, and 3 Yale EDs).</div>
     </div>
     <div class="ledger-cell">
-      <div class="ledger-val accent">+1.51 NB</div>
-      <div class="ledger-desc">Beth Israel &rarr; Emory zero-shot external gain on pure CPT-costed blood draws (95% CI [+0.47, +2.52], <em>p</em> = 0.006).</div>
+      <div class="ledger-val accent">+1.51 / +3.00 NB</div>
+      <div class="ledger-desc">Emory CPT bloodwork ensemble gain vs. Global-CMI (<em>p</em> = 0.0084) and published Covert-AFA (<em>p</em> = 0.0002).</div>
     </div>
     <div class="ledger-cell">
-      <div class="ledger-val accent">93.3% vs 13.3%</div>
-      <div class="ledger-desc">Tie-breaker channel recovery under 94% true-negative dilution (3.3% null FWER across 30 replicates).</div>
+      <div class="ledger-val accent">80.5% vs 8.3%</div>
+      <div class="ledger-desc">Tie-breaker recovery across 1,000 dilution replicates (1.0% sequential null FWER vs. 8.1% Global-CMI).</div>
     </div>
     <div class="ledger-cell">
       <div class="ledger-val accent">11 / 11 Strata</div>
-      <div class="ledger-desc">Fairness-blinded Yale ESI 4–5 race, language &amp; insurance subgroups with &Delta;NB &gt; 0 (+4.10 Non-English, +2.67 Medicaid).</div>
+      <div class="ledger-desc">Fairness-blinded Yale ESI 4–5 subgroups &gt; 0 (8/11 95% CIs &gt; 0; Non-English +4.07, Medicaid +2.70) &amp; CITL audited.</div>
     </div>
   </div>
 
@@ -834,22 +834,29 @@
 
     <section id="figures">
       <div class="wrap">
-        <h2>Publication Figures</h2>
+        <h2>Publication Figures (v2 Strengthened Suite)</h2>
         <p class="section-lead">
-          Mechanism verification, leaf-starvation scale physics across event counts, external Vickers Decision Curves, and post-hoc demographic/insurance fairness across all 11 strata.
+          1,000-replicate dilution &amp; null-FWER verification, (&tau;*, &kappa;) suppression-vs-active-mass frontiers, &beta;&#770;<sub>CZ</sub> regime detection, published Covert-AFA comparisons, 4h&ndash;12h landmark sweeps, label-free prevalence-shift intercept rescue, and external LOESS calibration curves.
         </p>
 
         <figure class="figure-plate">
-          <img src="assets/fig_paper2_three_predicates_ws4tb.png" alt="Four-panel figure showing Schervish kernel versus log-loss, synthetic dilution rescue, zero-shot Emory sepsis transfer, and leaf-starvation elimination across BIDMC and Yale EDs" loading="lazy" />
+          <img src="assets/fig1_mechanism_frontier_and_beta.png" alt="Four-panel figure showing Schervish kernel versus log-loss, (tau*, kappa) frontier, 1,000-replicate dilution and null FWER, and learned beta_CZ self-damping regime detector" loading="lazy" />
           <figcaption>
-            <strong>Figure 1 — Mechanism &amp; Track A Multi-Hospital Overview.</strong> (A) Log-loss singularity vs. smooth Schervish Beta-kernel and Stage-2 Fluid KL gate peaking at &tau;* = 8%. (B) Synthetic dilution recovery (13.3% &rarr; 93.3%) and pilot High-Signal FP concentration (11.9% &rarr; 22.8%). (C) Zero-shot Emory external sepsis Net Benefit (N = 19,696): superadditive gain of <code>CZ-Fluid</code> (+2.08) over <code>Global-CMI</code> (+0.97) and starved Naive Downweighting (+0.65). (D) Eliminating leaf starvation across BIDMC, Yale ESI 4–5 (153k), and Yale All-Comers (560k).
+            <strong>Figure 1 &mdash; Mechanism, (&tau;*, &kappa;) Frontier, 1,000-Replicate Null FWER &amp; Learned &beta;&#770;<sub>CZ</sub> Regime Detector.</strong> (A) Log-loss singularity vs. Schervish Beta-kernel and Stage-2 Fluid KL gate. (B) Analytical (&tau;*, &kappa;) subthreshold-suppression vs. active-mass frontier across clinical cohorts. (C) 1,000-replicate synthetic dilution recovery (8.3% &rarr; 80.5%) and sequential null FWER (1.0% vs. 8.1% Global-CMI). (D) Learned &beta;&#770;<sub>CZ</sub> self-damping across synthetic and multi-hospital regimes.
           </figcaption>
         </figure>
 
         <figure class="figure-plate">
-          <img src="assets/fig_paper2_dual_track_hardened.png" alt="Four-panel figure showing hardened Track B sepsis transfer, Emory Vickers Decision Curve, Yale fairness-blinded and cross-campus transfer, and all 11 fairness-blinded subgroup Net Benefit gains" loading="lazy" />
+          <img src="assets/fig2_sepsis_transfer_afa_and_landmarks.png" alt="Four-panel figure showing Emory symmetric ensemble and per-split Net Benefit versus Global-CMI and Covert-AFA, Vickers Decision Curve, 4h-12h landmark sweep, and Track B2 prevalence-shift intercept recalibration" loading="lazy" />
           <figcaption>
-            <strong>Figure 2 — Track B Hardened Clinical, Causal &amp; Fairness Audit.</strong> (A) Zero-shot Emory transfer across PhysioNet parity, measured CPT bloodwork (<em>p</em> = 0.006 vs. <code>Global-CMI</code>), and strict 4h+2h lead gap. (B) Full Emory Vickers Decision Curve (&tau; &isin; [2%, 15%]). (C) Yale ESI 4–5 across Hong parity, fairness-blinded triage, and zero-shot Campus A &rarr; B transfer (N = 51,205). (D) Post-hoc subgroup Net Benefit gain across all 11 demographic, language, and insurance strata under fairness-blinded routing.
+            <strong>Figure 2 &mdash; Zero-Shot Sepsis Transfer (BIDMC &rarr; Emory), Published Covert-AFA Comparison, Landmark Sweep &amp; Intercept Rescue.</strong> (A) Symmetric split-averaged ensemble and descriptive per-split Net Benefit on primary Track B1b (+5.19 vs. +3.68 Global-CMI, <em>p</em> = 0.0084; +3.00 vs. Covert-AFA, <em>p</em> = 0.0002) and Track A (+2.94 vs. +1.95, <em>p</em> = 0.0020). (B) Full Emory Vickers Decision Curve. (C) 4h / 6h / 8h / 12h observation landmark sweep. (D) Track B2 LOESS calibration before (&minus;1.56 NB, ICI = 0.020) and after label-free prior-odds shift &Delta;<sub>0</sub> = &minus;0.55 (+2.22 NB, ICI = 0.007).
+          </figcaption>
+        </figure>
+
+        <figure class="figure-plate">
+          <img src="assets/fig3_calibration_and_yale_transfer.png" alt="Three-panel figure showing external LOESS calibration curves, all five Yale ED benchmarks with Cross-Campus Track B4 primary, and all 11 fairness-blinded subgroup Net Benefit gains and CITL with 95% CIs" loading="lazy" />
+          <figcaption>
+            <strong>Figure 3 &mdash; External LOESS Calibration, All Five Yale ED Benchmarks &amp; Subgroup Inference.</strong> (A) Flexible LOESS calibration curves across Emory B1b and Yale Cross-Campus B4a/B4b. (B) Primary leak-free Cross-Campus Track B4 (+0.40 on 166k all-comers, <em>p</em> = 0.0288; +0.06 parity on 51k ESI 4&ndash;5) alongside within-system reference damping (&beta;&#770;<sub>CZ</sub> &isin; [0.12, 0.21]). (C1&ndash;C2) Subgroup &Delta;NB (11/11 positive; 8/11 95% CIs &gt; 0) and subgroup CITL across race, language, and insurance.
           </figcaption>
         </figure>
       </div>
@@ -890,7 +897,7 @@
               <tr>
                 <td class="strong">4. Adversarial Red-Teaming &amp; Sealing</td>
                 <td>Directed statistical critique, Agniel informative-ordering tests, fairness blinding, and final editorial approval.</td>
-                <td>Executed de-confounded ablations, live Crossref/arXiv DOI verification (29/29 verified), independent blind screening audits, and SHA-256 sealing.</td>
+                <td>Executed de-confounded ablations, live Crossref/arXiv DOI verification (38/38 cited &amp; verified), independent blind screening audits, and SHA-256 sealing.</td>
               </tr>
               <tr>
                 <td class="strong">5. Authorship &amp; Accountability</td>
@@ -909,11 +916,11 @@
             </p>
           </div>
           <div class="seal-meta">
-            <strong>Preprint Two-Pass Hard-Gate Seal</strong><br />
+            <strong>Preprint Two-Pass Hard-Gate Seal (v2)</strong><br />
             Status: SEALED_FOR_SUBMISSION<br />
-            Seal ID: bfc05436cab28141553452eb<br />
-            SHA-256: 220c22f2a79092d2...<br />
-            Citations: 33/33 (29/29 live DOI/arXiv)
+            Seal ID: 0f13f7e605b7c79918d1d2fc<br />
+            SHA-256: 10e434785cd81bad...<br />
+            Citations: 38/38 &middot; Unit Tests: 32/32
           </div>
         </div>
       </div>
@@ -923,7 +930,7 @@
       <div class="wrap">
         <h2>Citation &amp; Reproducibility</h2>
         <p class="section-lead">
-          The complete Python package (<code>collision-zone-ed</code>), unit tests (8/8 passing), benchmark scripts, and archived JSON summaries are openly available on GitHub. Both underlying datasets are publicly accessible via <a href="https://physionet.org/content/challenge-2019/">PhysioNet 2019</a> and the <a href="https://github.com/yaleemmlc/admissionprediction">Yale ED Admission Prediction</a> repository.
+          The complete Python package (<code>collision-zone-ed</code>), unit tests (32/32 passing), benchmark scripts, and archived JSON summaries are openly available on GitHub. Both underlying datasets are publicly accessible via <a href="https://physionet.org/content/challenge-2019/">PhysioNet 2019</a> and the <a href="https://github.com/yaleemmlc/admissionprediction">Yale ED Admission Prediction</a> repository.
         </p>
 
         <div class="bib-wrap">
