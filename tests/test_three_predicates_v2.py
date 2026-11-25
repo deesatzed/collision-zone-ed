@@ -35,6 +35,7 @@ from collision_zone.three_predicates import (
     fit_stage1_predictions,
     holm_adjust,
     log_likelihood_score,
+    net_benefit_per_1k,
     run_sequential_discovery,
     sample_pilot,
     schervish_collision_proper_score,
@@ -593,3 +594,37 @@ def test_24_covert_afa_frontier_snb_and_clopper_pearson() -> None:
 
     fr = compute_tau_kappa_frontier(s1_cache[0], ct.tau_star, [0.0, 10.0, 20.0], min_cz_ess=80.0)
     assert fr["active_hessian_mass"][0] > fr["active_hessian_mass"][1] > fr["active_hessian_mass"][2]
+
+
+# 25
+def test_25_fractional_query_billing_eliminates_majority_vote_leakage() -> None:
+    ct = ClinicalContract(cost_fp=1.0, cost_fn=15.0, target_precision=0.30, per_instance_query_cost=0.03)
+    y = np.array([1, 0, 1, 0], dtype=int)
+    p = np.array([0.12, 0.08, 0.02, 0.01], dtype=float)
+    # 4 out of 10 splits queried Stage-2 (0.4 < 0.5 majority threshold): must bill exact 0.4, NOT 0.0 or 1.0!
+    q_frac = np.full(4, 0.4, dtype=float)
+    q_zero = np.zeros(4, dtype=float)
+    nb_frac = net_benefit_per_1k(y, p, q_frac, ct)
+    nb_zero = net_benefit_per_1k(y, p, q_zero, ct)
+    expected_cost_penalty = 1000.0 * (ct.per_instance_query_cost / ct.cost_fn) * 0.4
+    assert np.isclose(nb_zero - nb_frac, expected_cost_penalty, atol=1e-12)
+    assert np.isclose(float(np.mean(_unit_nb_vector(y, p, q_frac, ct))), nb_frac, atol=1e-12)
+    counts = clinical_impact_counts_per_1k(y, p, q_frac, ct)
+    assert np.isclose(counts["stage2_queries_per_1k"], 400.0, atol=1e-12)
+    dca_frac = compute_decision_curve(y, p, q_frac, [ct.tau_star], ct.per_instance_query_cost)
+    assert np.isclose(dca_frac["nb_model"][0], nb_frac, atol=1e-12)
+
+
+# 26
+def test_26_coherent_single_draw_bagged_ensemble_zero_unpaid_stage2() -> None:
+    ct = ClinicalContract(cost_fp=1.0, cost_fn=15.0, target_precision=0.30, per_instance_query_cost=0.03)
+    rng = np.random.default_rng(707)
+    p1_ens = rng.uniform(0.01, 0.15, size=200)
+    p2_ens = np.clip(p1_ens + rng.normal(0.0, 0.04, size=200), 1e-4, 0.99)
+    q_grid = np.linspace(-0.6, 0.6, 33)[None, :]
+    voi = empirical_martingale_voi(p1_ens, np.zeros(200, dtype=int), q_grid, ct)
+    q_bag = voi > ct.per_instance_query_cost
+    p_bag = np.where(q_bag, p2_ens, p1_ens)
+    # Whenever binary venipuncture decision q_bag is False, routed risk MUST equal Stage-1 p1_ens identically
+    assert np.array_equal(p_bag[~q_bag], p1_ens[~q_bag])
+    assert np.all(q_bag.astype(int) == q_bag)

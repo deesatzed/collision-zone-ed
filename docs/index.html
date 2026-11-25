@@ -706,8 +706,8 @@
       <div class="ledger-desc">Acute-care encounters audited across 5 hospitals (Beth Israel, Emory, and 3 Yale EDs).</div>
     </div>
     <div class="ledger-cell">
-      <div class="ledger-val accent">+1.51 / +3.00 NB</div>
-      <div class="ledger-desc">Emory CPT bloodwork ensemble gain vs. Global-CMI (<em>p</em> = 0.0084) and published Covert-AFA (<em>p</em> = 0.0002).</div>
+      <div class="ledger-val accent">+1.38 / +2.78 NB</div>
+      <div class="ledger-desc">Emory CPT bloodwork ensemble gain vs. Global-CMI (<em>p</em> = 0.0166; bagged VOI +1.36, <em>p</em> = 0.0432) and Covert-AFA (<em>p</em> = 0.0002).</div>
     </div>
     <div class="ledger-cell">
       <div class="ledger-val accent">80.5% vs 8.3%</div>
@@ -715,7 +715,7 @@
     </div>
     <div class="ledger-cell">
       <div class="ledger-val accent">11 / 11 Strata</div>
-      <div class="ledger-desc">Fairness-blinded Yale ESI 4–5 subgroups &gt; 0 (8/11 95% CIs &gt; 0; Non-English +4.07, Medicaid +2.70) &amp; CITL audited.</div>
+      <div class="ledger-desc">Fairness-blinded Yale ESI 4–5 subgroups &gt; 0 (8/11 95% CIs &gt; 0; Non-English +4.11, Medicaid +2.74) &amp; CITL audited.</div>
     </div>
   </div>
 
@@ -759,7 +759,7 @@
       <div class="wrap">
         <h2>Dual-Track Multi-Hospital Evidence</h2>
         <p class="section-lead">
-          Every benchmark is evaluated under both <strong>Track A (Published Comparator Parity)</strong> and <strong>Track B (Hardened Clinical, Causal, Fairness-Blinded &amp; Cross-Campus External Transfer)</strong> with 1,000-replicate patient-level paired bootstraps and nonparametric empirical martingale Value-of-Information (VOI) routing.
+          Every benchmark is evaluated under a prespecified <strong>Dual-Track Protocol</strong> across <strong>Track B (Hardened Measured-CPT, De-Confounded, Fairness-Blinded &amp; Cross-Campus External Transfer)</strong> and <strong>Track A (Published Comparator Parity)</strong>, reporting descriptive per-split means alongside symmetric split-averaged ensemble Net Benefit (exact proportional query billing) with 10,000-replicate Davison–Hinkley paired bootstraps.
         </p>
 
         <div class="table-wrap">
@@ -767,67 +767,74 @@
             <thead>
               <tr>
                 <th>Benchmark &amp; Track</th>
-                <th>Stage-1 Baseline</th>
-                <th class="num">Global-CMI Auto NB</th>
-                <th class="num">CZ-Fluid Auto NB</th>
-                <th class="num">External Paired Boot. vs Global-CMI</th>
+                <th>Stage-1 (Split / Ens.)</th>
+                <th class="num">Global-CMI (Split / Ens.)</th>
+                <th class="num">CZ-Fluid (Split / Ens. [sNB])</th>
+                <th class="num">10,000-Rep Paired Bootstrap vs Ref.</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="strong">Sim 1: 94% TN Dilution (30 reps)</td>
-                <td>&minus;0.08 NB</td>
-                <td class="num">&minus;0.36 &plusmn; 0.25 (13.3% rec.)</td>
-                <td class="num win">+1.73 &plusmn; 0.25 (93.3% rec.)</td>
-                <td class="num">3.3% null FWER (&le;5%)</td>
+                <td class="strong">Sim 1: 94% TN Dilution (1,000 reps)</td>
+                <td>0.00 NB</td>
+                <td class="num">+0.08 &plusmn; 0.03 (8.3% rec., 8.1% FWER)</td>
+                <td class="num win">+1.64 &plusmn; 0.05 (80.5% rec., 1.0% FWER)</td>
+                <td class="num win">+1.55 [+1.45, +1.66], <em>p</em> = 0.0002</td>
               </tr>
               <tr>
-                <td class="strong">Sepsis Track A: BIDMC &rarr; Emory 6h Parity (19,696 ext.)</td>
-                <td>&minus;1.59 &plusmn; 0.27</td>
-                <td class="num">+0.97 &plusmn; 0.55</td>
-                <td class="num win">+2.08 &plusmn; 0.20</td>
-                <td class="num">2.14&times; Global-CMI (3.20&times; Naive)</td>
+                <td class="strong">Primary Sepsis B1b: Measured CPT (6,463 ext.)</td>
+                <td>+2.31 / +3.43</td>
+                <td class="num">+2.84 / +3.46 (Covert-AFA: +2.06)</td>
+                <td class="num win">+3.15 / +4.84 (+8.96%)</td>
+                <td class="num win">+1.38 [+0.28, +2.45], <em>p</em> = 0.0166 (+2.78 vs AFA)</td>
               </tr>
               <tr>
-                <td class="strong">Sepsis Track B1b: Measured CPT Bloodwork (6,463 ext.)</td>
-                <td>+2.31 &plusmn; 0.55</td>
-                <td class="num">+2.84 &plusmn; 0.59</td>
-                <td class="num win">+3.15 &plusmn; 0.48</td>
-                <td class="num win">+1.51 [+0.47, +2.52], <em>p</em> = 0.006</td>
+                <td class="strong">Secondary Sepsis A: 6h Parity (19,696 ext.)</td>
+                <td>&minus;1.59 / &minus;1.41</td>
+                <td class="num">+0.98 / +2.15 (Covert-AFA: &minus;1.77)</td>
+                <td class="num win">+2.07 / +3.12 (+7.34%)</td>
+                <td class="num win">+0.97 [+0.37, +1.58], <em>p</em> = 0.0024 (+4.89 vs AFA)</td>
               </tr>
               <tr>
-                <td class="strong">Sepsis Track B1a: Agniel Sparse Stress (92% unmeasured)</td>
-                <td>&minus;1.75 &plusmn; 0.25</td>
-                <td class="num">&minus;2.17 &plusmn; 0.35 (4/8 false buys)</td>
-                <td class="num win">&minus;1.75 &plusmn; 0.25 (0/8 buys)</td>
-                <td class="num">+0.05 [&minus;0.48, +0.58], <em>p</em> = 0.844</td>
+                <td class="strong">Sepsis Track B1a: Agniel 92%-Missing Stress</td>
+                <td>&minus;1.75 / &minus;1.56</td>
+                <td class="num">&minus;2.17 / &minus;1.86 (4/8 false buys)</td>
+                <td class="num win">&minus;1.75 / &minus;1.56 (0/8 buys)</td>
+                <td class="num">+0.30 [&minus;0.25, +0.84], <em>p</em> = 0.275 (safe abstain)</td>
               </tr>
               <tr>
-                <td class="strong">Yale Track B3: Fairness-Blinded ESI 4–5 (152,995 visits)</td>
-                <td>+4.44 NB</td>
-                <td class="num">+7.04 &plusmn; 0.09</td>
-                <td class="num">+7.01 &plusmn; 0.07</td>
-                <td class="num win">11/11 subgroups &Delta;NB &gt; 0</td>
+                <td class="strong">Sepsis Track B2: 4h+2h Gap (6.94% &rarr; 4.14% shift)</td>
+                <td>&minus;3.46 / &minus;2.76</td>
+                <td class="num">&minus;2.65 / &minus;1.44</td>
+                <td class="num win">&minus;2.67 / &minus;1.81 &rarr; +2.08 recal.</td>
+                <td class="num">Label-free shift &Delta;<sub>0</sub> = &minus;0.55 (ICI: 0.020 &rarr; 0.007)</td>
               </tr>
               <tr>
-                <td class="strong">Yale Track B4a: Campus A &rarr; B ESI 4–5 (51,205 ext.)</td>
-                <td>+3.42 NB</td>
-                <td class="num">+5.31</td>
-                <td class="num win">+5.34</td>
-                <td class="num">+0.06 (<em>p</em> = 0.404); +1.53 vs Triage (<em>p</em> &lt; 0.001)</td>
+                <td class="strong">Primary Yale B4b: Campus A &rarr; B All-Comers (166,497 ext.)</td>
+                <td>249.96 / 250.43</td>
+                <td class="num">253.90 / 255.61</td>
+                <td class="num win">254.02 / 256.06 (80.9%)</td>
+                <td class="num win">+0.45 [+0.09, +0.82], <em>p</em> = 0.0130 (+5.63 vs Triage)</td>
               </tr>
               <tr>
-                <td class="strong">Yale Track B4b: Campus A &rarr; B All-Comers (166,497 ext.)</td>
-                <td>+249.96 NB</td>
-                <td class="num">+253.90</td>
-                <td class="num win">+254.02</td>
-                <td class="num win">+0.40 [+0.04, +0.77], <em>p</em> = 0.030</td>
+                <td class="strong">Primary Yale B4a: Campus A &rarr; B ESI 4–5 (51,205 ext.)</td>
+                <td>3.42 / 3.78</td>
+                <td class="num">5.31 / 5.29</td>
+                <td class="num win">5.34 / 5.36 (29.6%)</td>
+                <td class="num">+0.07 [&minus;0.08, +0.22], <em>p</em> = 0.360 (&beta;&#770;<sub>CZ</sub> = 0.21; +1.58 vs Triage)</td>
+              </tr>
+              <tr>
+                <td class="strong">Ref. Yale B3: Fairness-Blinded ESI 4–5 (152,995 visits)</td>
+                <td>4.44 / 4.63</td>
+                <td class="num">7.04 / 7.25</td>
+                <td class="num">7.01 / 7.13 (37.9%)</td>
+                <td class="num win">11/11 subgroups &Delta;NB &gt; 0 (8/11 95% CIs &gt; 0)</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="table-note">
-          Net Benefit (NB) is reported per 1,000 encounters under each cohort's operational utility contract (&tau;* = 6.25% sepsis; &tau;* = 4.0% Yale ESI 4–5; &tau;* = 15.0% Yale All-Comers). Paired bootstrap differences evaluate 1,000 patient-level resamples of the split-averaged external ensemble predictions.
+          Net Benefit (NB) is reported per 1,000 encounters under each cohort's operational utility contract (&tau;* = 6.25% sepsis; &tau;* = 4.0% Yale ESI 4–5; &tau;* = 15.0% Yale All-Comers) with exact split-proportional expected query billing. Paired bootstrap differences evaluate 10,000 patient-level resamples (Davison–Hinkley two-sided <em>p</em><sub>DH</sub>).
         </p>
       </div>
     </section>
@@ -849,14 +856,14 @@
         <figure class="figure-plate">
           <img src="assets/fig2_sepsis_transfer_afa_and_landmarks.png" alt="Four-panel figure showing Emory symmetric ensemble and per-split Net Benefit versus Global-CMI and Covert-AFA, Vickers Decision Curve, 4h-12h landmark sweep, and Track B2 prevalence-shift intercept recalibration" loading="lazy" />
           <figcaption>
-            <strong>Figure 2 &mdash; Zero-Shot Sepsis Transfer (BIDMC &rarr; Emory), Published Covert-AFA Comparison, Landmark Sweep &amp; Intercept Rescue.</strong> (A) Symmetric split-averaged ensemble and descriptive per-split Net Benefit on primary Track B1b (+5.19 vs. +3.68 Global-CMI, <em>p</em> = 0.0084; +3.00 vs. Covert-AFA, <em>p</em> = 0.0002) and Track A (+2.94 vs. +1.95, <em>p</em> = 0.0020). (B) Full Emory Vickers Decision Curve. (C) 4h / 6h / 8h / 12h observation landmark sweep. (D) Track B2 LOESS calibration before (&minus;1.56 NB, ICI = 0.020) and after label-free prior-odds shift &Delta;<sub>0</sub> = &minus;0.55 (+2.22 NB, ICI = 0.007).
+            <strong>Figure 2 &mdash; Zero-Shot Sepsis Transfer (BIDMC &rarr; Emory), Published Covert-AFA Comparison, Landmark Sweep &amp; Intercept Rescue.</strong> (A) Symmetric split-averaged ensemble and descriptive per-split Net Benefit on primary Track B1b (+4.84 vs. +3.46 Global-CMI, <em>p</em> = 0.0166; +2.78 vs. Covert-AFA, <em>p</em> = 0.0002) and Track A (+3.12 vs. +2.15, <em>p</em> = 0.0024). (B) Full Emory Vickers Decision Curve. (C) 4h / 6h / 8h / 12h observation landmark sweep. (D) Track B2 LOESS calibration before (&minus;1.81 NB, ICI = 0.020) and after label-free prior-odds shift &Delta;<sub>0</sub> = &minus;0.55 (+2.08 NB, ICI = 0.007).
           </figcaption>
         </figure>
 
         <figure class="figure-plate">
           <img src="assets/fig3_calibration_and_yale_transfer.png" alt="Three-panel figure showing external LOESS calibration curves, all five Yale ED benchmarks with Cross-Campus Track B4 primary, and all 11 fairness-blinded subgroup Net Benefit gains and CITL with 95% CIs" loading="lazy" />
           <figcaption>
-            <strong>Figure 3 &mdash; External LOESS Calibration, All Five Yale ED Benchmarks &amp; Subgroup Inference.</strong> (A) Flexible LOESS calibration curves across Emory B1b and Yale Cross-Campus B4a/B4b. (B) Primary leak-free Cross-Campus Track B4 (+0.40 on 166k all-comers, <em>p</em> = 0.0288; +0.06 parity on 51k ESI 4&ndash;5) alongside within-system reference damping (&beta;&#770;<sub>CZ</sub> &isin; [0.12, 0.21]). (C1&ndash;C2) Subgroup &Delta;NB (11/11 positive; 8/11 95% CIs &gt; 0) and subgroup CITL across race, language, and insurance.
+            <strong>Figure 3 &mdash; External LOESS Calibration, All Five Yale ED Benchmarks &amp; Subgroup Inference.</strong> (A) Flexible LOESS calibration curves across Emory B1b and Yale Cross-Campus B4a/B4b. (B) Primary leak-free Cross-Campus Track B4 (+0.45 on 166k all-comers, <em>p</em> = 0.0130; +0.07 parity on 51k ESI 4&ndash;5) alongside within-system reference damping (&beta;&#770;<sub>CZ</sub> &isin; [0.12, 0.21]). (C1&ndash;C2) Subgroup &Delta;NB (11/11 positive; 8/11 95% CIs &gt; 0) and subgroup CITL across race, language, and insurance.
           </figcaption>
         </figure>
       </div>
@@ -918,9 +925,9 @@
           <div class="seal-meta">
             <strong>Preprint Two-Pass Hard-Gate Seal (v2)</strong><br />
             Status: SEALED_FOR_SUBMISSION<br />
-            Seal ID: 0f13f7e605b7c79918d1d2fc<br />
-            SHA-256: 10e434785cd81bad...<br />
-            Citations: 38/38 &middot; Unit Tests: 32/32
+            Seal ID: 4c61eb9cdfb2861a039bd07e<br />
+            SHA-256: 5a6bebff0198c1fe...<br />
+            Citations: 38/38 &middot; Unit Tests: 34/34
           </div>
         </div>
       </div>
@@ -930,7 +937,7 @@
       <div class="wrap">
         <h2>Citation &amp; Reproducibility</h2>
         <p class="section-lead">
-          The complete Python package (<code>collision-zone-ed</code>), unit tests (32/32 passing), benchmark scripts, and archived JSON summaries are openly available on GitHub. Both underlying datasets are publicly accessible via <a href="https://physionet.org/content/challenge-2019/">PhysioNet 2019</a> and the <a href="https://github.com/yaleemmlc/admissionprediction">Yale ED Admission Prediction</a> repository.
+          The complete Python package (<code>collision-zone-ed</code>), unit tests (34/34 passing), benchmark scripts, and archived JSON summaries are openly available on GitHub. Both underlying datasets are publicly accessible via <a href="https://physionet.org/content/challenge-2019/">PhysioNet 2019</a> and the <a href="https://github.com/yaleemmlc/admissionprediction">Yale ED Admission Prediction</a> repository.
         </p>
 
         <div class="bib-wrap">

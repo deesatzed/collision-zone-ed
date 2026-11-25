@@ -734,9 +734,6 @@ def main() -> None:
     }
     out_file = RES_DIR / "paper2_initial_campaign_summary.json"
     out_file.write_text(json.dumps(summary, indent=2))
-    art_dir = Path("/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch")
-    if art_dir.exists():
-        shutil.copy2(out_file, art_dir / "paper2_initial_campaign_summary.json")
     print("Saved complete Paper 2 campaign summary:", out_file)
     subprocess.run([sys.executable, str(Path(__file__).with_name("plot_paper2_figures.py"))], check=True)
 

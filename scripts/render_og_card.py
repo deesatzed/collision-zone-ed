@@ -8,9 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import FancyBboxPatch
 
-OUT_PATH = Path(
-    "/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch/paper2_stage/repo_files/docs/og-card.png"
-)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+OUT_PATH = REPO_ROOT / "docs" / "og-card.png"
 
 
 def bern_kl(tau: float, p: np.ndarray) -> np.ndarray:
@@ -52,7 +51,7 @@ def main() -> None:
     # Three crisp editorial metric cards (52..686, 200px wide each, 17px gap)
     metrics = [
         ("600,154", "Clinical Encounters\nAcross 5 Hospitals", 52),
-        ("+1.51 NB", "Emory CPT Blood\nDraws (p = 0.006)", 269),
+        ("+1.38 NB", "Emory CPT Blood\nDraws (p = 0.017)", 269),
         ("11 / 11", "Fairness-Blinded\nSubgroups ΔNB > 0", 486),
     ]
     for val, lbl, x0 in metrics:

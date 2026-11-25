@@ -101,7 +101,7 @@ def clinical_impact_counts_per_1k(
     """Concrete clinical counts per 1,000 arrivals and per 100-visit shift."""
     yv = np.asarray(y, dtype=int)
     pv = np.asarray(p_routed, dtype=float)
-    qv = np.asarray(queried_mask, dtype=bool)
+    qv = np.asarray(queried_mask, dtype=float)
     n = float(max(1, yv.size))
     prev = float(np.mean(yv))
     act = pv >= contract.tau_star
@@ -163,7 +163,7 @@ def _unit_nb_vector(
 ) -> np.ndarray:
     yv = np.asarray(y, dtype=int)
     pv = np.asarray(p_routed, dtype=float)
-    qv = np.asarray(queried_mask, dtype=bool)
+    qv = np.asarray(queried_mask, dtype=float)
     act = pv >= contract.tau_star
     w_fp = contract.cost_fp / contract.cost_fn
     w_q = contract.per_instance_query_cost / contract.cost_fn

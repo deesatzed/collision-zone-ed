@@ -3,17 +3,18 @@
 Strict Isolation & Resource Governance:
   - READ-ONLY on `/Users/o2satz/antigravity/collision_zone_ed` and `/Volumes/WS4TB/imboreceipt_data`.
   - WRITES ONLY inside `results/`.
-  - Enforces `OMP_NUM_THREADS=4` and `n_jobs=4` (or 4 processes x 1 thread in Sim 1) throughout.
+  - Enforces `OMP_NUM_THREADS=4` and `n_jobs=N_JOBS_DEFAULT` (or 4 processes x 1 thread in Sim 1) throughout.
 """
 
 from __future__ import annotations
 
 import os
 
-os.environ["OMP_NUM_THREADS"] = "4"
-os.environ["OPENBLAS_NUM_THREADS"] = "4"
-os.environ["MKL_NUM_THREADS"] = "4"
-os.environ["VECLIB_MAXIMUM_THREADS"] = "4"
+os.environ.setdefault("OMP_NUM_THREADS", "4")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "4")
+os.environ.setdefault("MKL_NUM_THREADS", "4")
+os.environ.setdefault("VECLIB_MAXIMUM_THREADS", "4")
+N_JOBS_DEFAULT = int(os.environ.get("CZ_N_JOBS", "4"))
 
 import json
 import sys
@@ -25,7 +26,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = REPO_ROOT / "results" / "data_cache"
 SRC_ROOT = Path(__file__).resolve().parents[1] / "src"
-for p in (str(STAGE_DIR), str(SRC_ROOT)):
+for p in (str(REPO_ROOT), str(SRC_ROOT)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
@@ -63,7 +64,7 @@ from collision_zone.three_predicates_v2 import (
 
 RAW_DIR = Path("/Volumes/WS4TB/imboreceipt_data")
 PROC_DIR = RAW_DIR / "processed"
-ARCHIVED_RES_DIR = Path("/Users/o2satz/antigravity/collision_zone_ed/results")
+ARCHIVED_RES_DIR = REPO_ROOT / "results"
 OUT_JSON = REPO_ROOT / "results" / "paper2_v2_strengthening_results.json"
 
 VITALS_7 = ["HR", "O2Sat", "Temp", "SBP", "MAP", "DBP", "Resp"]
@@ -643,6 +644,8 @@ def run_sepsis_v2_cohort(
     bidmc_p_oof_cnt = np.zeros(len(df_a), dtype=float)
     bidmc_cal_p_all: list[np.ndarray] = []
     bidmc_cal_y_all: list[np.ndarray] = []
+    coh_p1_cal_all: list[np.ndarray] = []
+    coh_p2_cal_by_arm: dict[str, list[np.ndarray]] = {a: [] for a in arm_names}
 
     # Cache split artifacts if sensitivity grid is requested on Track B1b
     cached_splits: list[dict[str, object]] = []
@@ -656,7 +659,7 @@ def run_sepsis_v2_cohort(
     for s in range(n_splits):
         ts = time.time()
         tr, ca, te = make_stratified_3way_split(y_a, seed=700 + s)
-        oof_p = compute_oof_stage1_v2(df_a.iloc[tr][base_cols], y_a[tr], n_folds=4, seed=800 + s, n_jobs=4)
+        oof_p = compute_oof_stage1_v2(df_a.iloc[tr][base_cols], y_a[tr], n_folds=4, seed=800 + s, n_jobs=N_JOBS_DEFAULT)
 
         d_glob = run_sequential_discovery_v2(
             df_a.iloc[tr],
@@ -669,7 +672,7 @@ def run_sepsis_v2_cohort(
             pilot_fraction=pilot_frac,
             budget=budget,
             deconfound_stage2=deconfound_stage2,
-            n_jobs=4,
+            n_jobs=N_JOBS_DEFAULT,
             seed=900 + s,
         ).outcome
         d_cz = run_sequential_discovery_v2(
@@ -683,7 +686,7 @@ def run_sepsis_v2_cohort(
             pilot_fraction=pilot_frac,
             budget=budget,
             deconfound_stage2=deconfound_stage2,
-            n_jobs=4,
+            n_jobs=N_JOBS_DEFAULT,
             seed=900 + s,
         ).outcome
 
@@ -716,6 +719,7 @@ def run_sepsis_v2_cohort(
         ens_p_auto_sum["stage1_base"] += p1_emory
         ens_p2_sum["stage1_base"] += p1_emory
         split_unit_nb_sum["stage1_base"] += _unit_nb_vector(y_b, p1_emory, q_zero, contract)
+        coh_p1_cal_all.append(s1_cache[0])
 
         arm_configs = [
             ("paper1_global_cmi_global_s2", cols_glob, "global"),
@@ -745,7 +749,7 @@ def run_sepsis_v2_cohort(
                 precomputed_stage1=s1_cache,
                 out_routed_traces=traces,
                 out_cal_trace=cal_tr,
-                n_jobs=4,
+                n_jobs=N_JOBS_DEFAULT,
                 seed=1500 + s,
             )
             int_metrics[arm_name].append(ev_int)
@@ -757,6 +761,7 @@ def run_sepsis_v2_cohort(
             ens_q_auto_sum[arm_name] += q_ext.astype(float)
             ens_p2_sum[arm_name] += traces[1]["p2_te"]
             split_unit_nb_sum[arm_name] += _unit_nb_vector(y_b, p_ext, q_ext, contract)
+            coh_p2_cal_by_arm[arm_name].append(cal_tr["p2_cal"])
 
             if arm_name == "paper2_cz_disc_fluid_s2":
                 bidmc_p_oof_sum[te] += traces[0]["p_auto_te"]
@@ -804,7 +809,7 @@ def run_sepsis_v2_cohort(
                 budget=budget,
                 deconfound_stage2=deconfound_stage2,
                 out_routed_traces=afa_traces,
-                n_jobs=4,
+                n_jobs=N_JOBS_DEFAULT,
                 seed=1500 + s,
             )
             int_metrics["covert2023_greedy_cmi_afa"].append(afa_int)
@@ -828,14 +833,14 @@ def run_sepsis_v2_cohort(
             f"Glob={d_glob.selected_ids} | CZ={d_cz.selected_ids} | Emory NB: Glob={p1_nb:.2f}{extra} | CZ={p2_nb:.2f}"
         )
 
-    # Symmetric Split-Averaged Ensemble Levels across ALL arms
+    # Symmetric Split-Averaged Ensemble Levels across ALL arms (exact split-proportional query billing)
     prev_b = float(np.mean(y_b))
     prev_a = float(np.mean(y_a))
     ens_levels: dict[str, dict[str, float]] = {}
     ens_preds: dict[str, tuple[np.ndarray, np.ndarray]] = {}
     for a in ["stage1_base"] + arm_names:
         pa = ens_p_auto_sum[a] / float(n_splits)
-        qa = (ens_q_auto_sum[a] / float(n_splits)) >= 0.5
+        qa = ens_q_auto_sum[a] / float(n_splits)
         p2a = ens_p2_sum[a] / float(n_splits)
         nb_ens = net_benefit_per_1k(y_b, pa, qa, contract)
         ens_preds[a] = (pa, qa)
@@ -853,6 +858,54 @@ def run_sepsis_v2_cohort(
                 else float(np.mean([r["nb_base_0pct"] for r in ext_metrics["paper1_global_cmi_global_s2"]]))
             ),
         }
+
+    # Coherent Single-Draw Bagged Ensemble (1 binary venipuncture decision Q_bag in {0, 1} from bagged p1)
+    p1_cal_cat = np.concatenate(coh_p1_cal_all)
+    p1_ens_b = ens_p_auto_sum["stage1_base"] / float(n_splits)
+    coh_preds: dict[str, tuple[np.ndarray, np.ndarray]] = {
+        "stage1_base": (p1_ens_b, np.zeros(n_b, dtype=bool))
+    }
+    coh_levels: dict[str, dict[str, float]] = {
+        "stage1_base": {
+            "coh_nb_auto": ens_levels["stage1_base"]["ens_nb_auto"],
+            "coh_snb_auto": ens_levels["stage1_base"]["ens_snb_auto"],
+            "coh_query_rate_binary": 0.0,
+        }
+    }
+    for a in arm_names:
+        if len(coh_p2_cal_by_arm[a]) == n_splits:
+            p2_cal_cat = np.concatenate(coh_p2_cal_by_arm[a])
+            d_cal_coh = logit(np.clip(p2_cal_cat, 1e-6, 1.0 - 1e-6)) - logit(
+                np.clip(p1_cal_cat, 1e-6, 1.0 - 1e-6)
+            )
+            if float(np.max(np.abs(d_cal_coh))) >= 1e-9:
+                edges_c = np.quantile(p1_cal_cat, np.linspace(0.0, 1.0, 13))
+                edges_c[0], edges_c[-1] = 0.0, 1.0
+                b_cal_c = np.clip(np.digitize(p1_cal_cat, edges_c[1:-1], right=False), 0, 11)
+                qs_c = np.linspace(0.02, 0.98, 33)
+                gq_c = np.quantile(d_cal_coh, qs_c)
+                bq_c = np.array(
+                    [
+                        np.quantile(d_cal_coh[b_cal_c == b], qs_c)
+                        if int(np.sum(b_cal_c == b)) >= 15
+                        else gq_c
+                        for b in range(12)
+                    ]
+                )
+                b_te_c = np.clip(np.digitize(p1_ens_b, edges_c[1:-1], right=False), 0, 11)
+                voi_c = empirical_martingale_voi(p1_ens_b, b_te_c, bq_c, contract)
+                q_c = voi_c > contract.per_instance_query_cost
+            else:
+                q_c = np.zeros(n_b, dtype=bool)
+            p2a_c = ens_p2_sum[a] / float(n_splits)
+            p_c = np.where(q_c, p2a_c, p1_ens_b)
+            nb_c = net_benefit_per_1k(y_b, p_c, q_c, contract)
+            coh_preds[a] = (p_c, q_c)
+            coh_levels[a] = {
+                "coh_nb_auto": nb_c,
+                "coh_snb_auto": standardized_net_benefit(nb_c, prev_b),
+                "coh_query_rate_binary": float(np.mean(q_c)),
+            }
 
     # 10,000-rep Paired Bootstraps (Davison-Hinkley p-values)
     p_cz, q_cz = ens_preds["paper2_cz_disc_fluid_s2"]
@@ -946,6 +999,41 @@ def run_sepsis_v2_cohort(
             y_b, p_af, q_af, contract, y_cal=y_cal_pool, p_cal=p_cal_pool, seed=74
         )
 
+    coh_boots: dict[str, object] = {}
+    if "paper2_cz_disc_fluid_s2" in coh_preds and "paper1_global_cmi_global_s2" in coh_preds:
+        pc_cz, qc_cz = coh_preds["paper2_cz_disc_fluid_s2"]
+        pc_gl, qc_gl = coh_preds["paper1_global_cmi_global_s2"]
+        pc_bs, qc_bs = coh_preds["stage1_base"]
+        coh_boots = {
+            "cz_fluid_vs_global_cmi": paired_bootstrap_nb_diff_v2(
+                y_b, pc_cz, qc_cz, pc_gl, qc_gl, contract, n_boot=10000, seed=42
+            ),
+            "cz_fluid_vs_stage1_base": paired_bootstrap_nb_diff_v2(
+                y_b, pc_cz, qc_cz, pc_bs, qc_bs, contract, n_boot=10000, seed=43
+            ),
+        }
+
+    split_mean_boots: dict[str, object] = {
+        "cz_fluid_vs_global_cmi": bootstrap_mean_1d(
+            (split_unit_nb_sum["paper2_cz_disc_fluid_s2"] - split_unit_nb_sum["paper1_global_cmi_global_s2"])
+            / float(n_splits),
+            n_boot=10000,
+            seed=42,
+        ),
+        "cz_fluid_vs_stage1_base": bootstrap_mean_1d(
+            (split_unit_nb_sum["paper2_cz_disc_fluid_s2"] - split_unit_nb_sum["stage1_base"]) / float(n_splits),
+            n_boot=10000,
+            seed=43,
+        ),
+    }
+    if include_covert_afa:
+        split_mean_boots["cz_fluid_vs_covert_afa"] = bootstrap_mean_1d(
+            (split_unit_nb_sum["paper2_cz_disc_fluid_s2"] - split_unit_nb_sum["covert2023_greedy_cmi_afa"])
+            / float(n_splits),
+            n_boot=10000,
+            seed=47,
+        )
+
     out: dict[str, object] = {
         "bidmc_rows": len(df_a),
         "emory_rows": len(df_b),
@@ -962,7 +1050,10 @@ def run_sepsis_v2_cohort(
             a: {k: _agg([r[k] for r in rows]) for k in rows[0]} for a, rows in ext_metrics.items()
         },
         "external_emory_symmetric_ensemble": ens_levels,
+        "external_emory_coherent_single_draw_ensemble": coh_levels,
         "emory_paired_bootstraps_10k": boots,
+        "emory_coherent_single_draw_bootstraps_10k": coh_boots,
+        "emory_per_split_expected_policy_bootstraps_10k": split_mean_boots,
         "superadditivity_interaction_ensemble_10k": inter_ens,
         "superadditivity_interaction_per_split_mean_10k": inter_split_mean,
         "emory_decision_curve": dca,
@@ -1034,9 +1125,9 @@ def run_sepsis_v2_cohort(
                 q_sum += q_r.astype(float)
 
         p_cz_voi_recal = recal_p_cz_sum / float(n_splits)
-        q_cz_voi_recal = (recal_q_cz_sum / float(n_splits)) >= 0.5
+        q_cz_voi_recal = recal_q_cz_sum / float(n_splits)
         p_gl_voi_recal = recal_p_gl_sum / float(n_splits)
-        q_gl_voi_recal = (recal_q_gl_sum / float(n_splits)) >= 0.5
+        q_gl_voi_recal = recal_q_gl_sum / float(n_splits)
 
         # 2. Marginal-Risk CITL Matching (mean predicted risk = pi_Emory, zero individual outcome labels)
         delta_citl_cz = solve_citl_intercept(prev_b, p_cz)
@@ -1123,7 +1214,7 @@ def run_sepsis_v2_cohort(
                         kappa=k_disc_arg,
                         n_bins=bs,
                         deconfound_stage2=deconfound_stage2,
-                        n_jobs=4,
+                        n_jobs=N_JOBS_DEFAULT,
                         seed=900 + s_idx,
                     ).outcome
                     disc_cache[(km, bs, s_idx)] = [
@@ -1165,7 +1256,7 @@ def run_sepsis_v2_cohort(
                             kappa=k_disc_arg,
                             kappa_max_s2=km,
                             min_cz_ess=mm,
-                            n_jobs=4,
+                            n_jobs=N_JOBS_DEFAULT,
                             seed=1500 + s_idx,
                         )
                         split_nbs_g.append(ev_ext_g["nb_voi_auto"])
@@ -1173,7 +1264,7 @@ def run_sepsis_v2_cohort(
                         q_sum_g += tr_list[1]["auto_te"].astype(float)
 
                     pg = p_sum_g / float(n_splits)
-                    qg = (q_sum_g / float(n_splits)) >= 0.5
+                    qg = q_sum_g / float(n_splits)
                     ens_nb_g = net_benefit_per_1k(y_b, pg, qg, contract)
                     boot_g = paired_bootstrap_nb_diff_v2(
                         y_b, pg, qg, p_gl, q_gl, contract, n_boot=10000, seed=600 + int(mm) + int(km) + bs
@@ -1204,7 +1295,11 @@ def run_sepsis_v2_cohort(
 # ---------------------------------------------------------------------------
 
 
-def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[str, object]:
+def run_yale_v2_cross_campus_and_fairness(
+    manifest: dict[str, object],
+    *,
+    only_subtrack: str | None = None,
+) -> dict[str, object]:
     yale_meta = manifest["yale_ed"]  # type: ignore[index]
     meta_full = pd.read_parquet(PROC_DIR / "yale_trackb_meta.parquet")
     df_full = pd.read_parquet(PROC_DIR / "yale_ed_full.parquet")
@@ -1250,6 +1345,8 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
             20000,
         ),
     ]:
+        if only_subtrack is not None and only_subtrack != tag:
+            continue
         t0 = time.time()
         if esi_only:
             esi_m = meta_full["esi"].isin(["4", "5", "4.0", "5.0"]).to_numpy()
@@ -1292,7 +1389,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
                 pids_c1, y_c1, seed=5100 + s, target_train=n_tr_cap, target_cal=n_ca_cap
             )
             oof_p = compute_oof_stage1_v2(
-                df_c1.iloc[tr][fair_base_cols], y_c1[tr], n_folds=4, seed=5200 + s, n_jobs=4
+                df_c1.iloc[tr][fair_base_cols], y_c1[tr], n_folds=4, seed=5200 + s, n_jobs=N_JOBS_DEFAULT
             )
             d_glob = run_sequential_discovery_v2(
                 df_c1.iloc[tr],
@@ -1304,7 +1401,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
                 method="global_cmi",
                 pilot_fraction=0.15,
                 budget=3.0,
-                n_jobs=4,
+                n_jobs=N_JOBS_DEFAULT,
                 seed=5300 + s,
             ).outcome
             d_cz = run_sequential_discovery_v2(
@@ -1318,7 +1415,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
                 pilot_fraction=0.15,
                 budget=3.0,
                 adaptive_kappa=True,
-                n_jobs=4,
+                n_jobs=N_JOBS_DEFAULT,
                 seed=5300 + s,
             ).outcome
             for cid in d_glob.selected_ids:
@@ -1364,7 +1461,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
                     precomputed_stage1=s1_cache,
                     out_routed_traces=traces,
                     out_cal_trace=cal_tr,
-                    n_jobs=4,
+                    n_jobs=N_JOBS_DEFAULT,
                     seed=5400 + s,
                 )[0]
                 ext_metrics[arm_name].append(ev_ext)
@@ -1386,7 +1483,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
         ens_preds: dict[str, tuple[np.ndarray, np.ndarray]] = {}
         for a in ["stage1_base"] + arm_names:
             pa = ens_p[a] / float(n_splits)
-            qa = (ens_q[a] / float(n_splits)) >= 0.5
+            qa = ens_q[a] / float(n_splits)
             p2a = ens_p2[a] / float(n_splits)
             nb_e = net_benefit_per_1k(y_c2, pa, qa, contract)
             ens_preds[a] = (pa, qa)
@@ -1495,6 +1592,9 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
             "external_campus_b_subgroup_audit": sub_c2_audit,
         }
 
+    if only_subtrack is not None and only_subtrack != "b3":
+        return {"yale_b4_cross_campus_primary": out_b4, "yale_b3_fairness_blinded": {}}
+
     # Track B3: Fairness-Blinded ESI 4-5 (N=152,995, R=6) with OOF Ensemble + pat_mrn_id CIs & CITL across 11 Subgroups
     t_b3 = time.time()
     esi_mask = meta_full["esi"].isin(["4", "5", "4.0", "5.0"]).to_numpy()
@@ -1528,7 +1628,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
             pids_low, y_low, seed=4100 + s, target_train=60000, target_cal=20000
         )
         oof_p = compute_oof_stage1_v2(
-            df_low.iloc[tr][fair_base_cols], y_low[tr], n_folds=4, seed=4200 + s, n_jobs=4
+            df_low.iloc[tr][fair_base_cols], y_low[tr], n_folds=4, seed=4200 + s, n_jobs=N_JOBS_DEFAULT
         )
         d_glob = run_sequential_discovery_v2(
             df_low.iloc[tr],
@@ -1540,7 +1640,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
             method="global_cmi",
             pilot_fraction=0.15,
             budget=3.0,
-            n_jobs=4,
+            n_jobs=N_JOBS_DEFAULT,
             seed=4300 + s,
         ).outcome
         d_cz = run_sequential_discovery_v2(
@@ -1554,7 +1654,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
             pilot_fraction=0.15,
             budget=3.0,
             adaptive_kappa=True,
-            n_jobs=4,
+            n_jobs=N_JOBS_DEFAULT,
             seed=4300 + s,
         ).outcome
         cols_glob = [col for cid in d_glob.selected_ids for col in ch_cols_map[cid]]
@@ -1596,7 +1696,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
                 precomputed_stage1=s1_cache,
                 out_routed_traces=tr_out,
                 out_cal_trace=cal_tr,
-                n_jobs=4,
+                n_jobs=N_JOBS_DEFAULT,
                 seed=4400 + s,
             )[0]
             b3_metrics[arm_name].append(ev)
@@ -1649,7 +1749,7 @@ def run_yale_v2_cross_campus_and_fairness(manifest: dict[str, object]) -> dict[s
     b3_oof_preds: dict[str, tuple[np.ndarray, np.ndarray]] = {}
     for a in ["stage1_base"] + b3_arms:
         pa = oof_p_sum[a][valid_m] / oof_cnt[valid_m]
-        qa = (oof_q_sum[a][valid_m] / oof_cnt[valid_m]) >= 0.5
+        qa = oof_q_sum[a][valid_m] / oof_cnt[valid_m]
         nb_e = net_benefit_per_1k(yv_oof, pa, qa, contract_low)
         b3_oof_preds[a] = (pa, qa)
         b3_oof_ens[a] = {
@@ -1771,7 +1871,7 @@ def run_tau_kappa_frontiers(manifest: dict[str, object]) -> dict[str, object]:
     sep_cols: list[str] = list(manifest["sepsis_6h"]["base_columns"])  # type: ignore[index]
     y_sep = df_sep["y_sepsis_future"].to_numpy(dtype=int)
     tr_s, _, _ = make_stratified_3way_split(y_sep, seed=700)
-    oof_sep = compute_oof_stage1_v2(df_sep.iloc[tr_s][sep_cols], y_sep[tr_s], n_folds=4, seed=800, n_jobs=4)
+    oof_sep = compute_oof_stage1_v2(df_sep.iloc[tr_s][sep_cols], y_sep[tr_s], n_folds=4, seed=800, n_jobs=N_JOBS_DEFAULT)
     fr_sepsis = compute_tau_kappa_frontier(oof_sep, 0.0625, k_grid, min_cz_ess=240.0)
 
     # 2. Yale ESI 4-5 (tau* = 0.04)
@@ -1783,14 +1883,14 @@ def run_tau_kappa_frontiers(manifest: dict[str, object]) -> dict[str, object]:
         if c in df_low.columns and c not in FAIRNESS_EXCLUDED_BASE_COLS
     ]
     tr_l, _, _ = make_stratified_3way_split(y_low, seed=2100, train_frac=60000.0 / len(y_low), cal_frac=20000.0 / len(y_low))
-    oof_low = compute_oof_stage1_v2(df_low.iloc[tr_l][yale_cols], y_low[tr_l], n_folds=4, seed=2200, n_jobs=4)
+    oof_low = compute_oof_stage1_v2(df_low.iloc[tr_l][yale_cols], y_low[tr_l], n_folds=4, seed=2200, n_jobs=N_JOBS_DEFAULT)
     fr_yale_low = compute_tau_kappa_frontier(oof_low, 0.04, k_grid, min_cz_ess=240.0)
 
     # 3. Yale All-Comers (tau* = 0.15)
     df_full = pd.read_parquet(PROC_DIR / "yale_ed_full.parquet")
     y_full = df_full["y_admit"].to_numpy(dtype=int)
     tr_f, _, _ = make_stratified_3way_split(y_full, seed=3100, train_frac=75000.0 / len(y_full), cal_frac=25000.0 / len(y_full))
-    oof_full = compute_oof_stage1_v2(df_full.iloc[tr_f][yale_cols], y_full[tr_f], n_folds=4, seed=3200, n_jobs=4)
+    oof_full = compute_oof_stage1_v2(df_full.iloc[tr_f][yale_cols], y_full[tr_f], n_folds=4, seed=3200, n_jobs=N_JOBS_DEFAULT)
     fr_yale_full = compute_tau_kappa_frontier(oof_full, 0.15, k_grid, min_cz_ess=240.0)
 
     return {
@@ -1801,7 +1901,7 @@ def run_tau_kappa_frontiers(manifest: dict[str, object]) -> dict[str, object]:
 
 
 def main() -> None:
-    STAGE_DIR.mkdir(parents=True, exist_ok=True)
+    (REPO_ROOT / "results").mkdir(parents=True, exist_ok=True)
     manifest = json.loads((PROC_DIR / "ws4tb_cohorts_manifest.json").read_text())
     sepsis_base_cols: list[str] = list(manifest["sepsis_6h"]["base_columns"])
 

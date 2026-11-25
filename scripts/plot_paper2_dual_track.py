@@ -10,9 +10,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-RES_DIR = Path(os.environ.get("COLLISION_ZONE_RES_DIR", "/Users/o2satz/antigravity/collision_zone_ed/results"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+RES_DIR = Path(os.environ.get("COLLISION_ZONE_RES_DIR", str(REPO_ROOT / "results")))
 OUT_DIR = Path(os.environ.get("COLLISION_ZONE_OUT_DIR", str(RES_DIR)))
-SCRATCH_DIR = Path("/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch")
 
 
 def main() -> None:
@@ -150,8 +150,6 @@ def main() -> None:
     plt.savefig(out_png, dpi=200)
     plt.savefig(out_pdf)
     plt.close(fig)
-    if SCRATCH_DIR.exists() and OUT_DIR.resolve() != SCRATCH_DIR.resolve():
-        shutil.copy2(out_png, SCRATCH_DIR / "fig_paper2_dual_track_hardened.png")
     print("Saved Dual-Track 4-panel figure:", out_png)
 
 

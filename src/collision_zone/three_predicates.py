@@ -876,7 +876,7 @@ def net_benefit_per_1k(
     act = np.asarray(p_routed, dtype=float) >= contract.tau_star
     tp = float(np.sum((act == 1) & (yv == 1)))
     fp = float(np.sum((act == 1) & (yv == 0)))
-    n_q = float(np.sum(queried_mask))
+    n_q = float(np.sum(np.asarray(queried_mask, dtype=float)))
     n = float(yv.size)
     return (
         1000.0
@@ -914,8 +914,8 @@ def paired_bootstrap_nb_diff(
             - w_q * qv.astype(float)
         )
 
-    d_i = _unit_nb(np.asarray(p_arm, dtype=float), np.asarray(q_arm, dtype=bool)) - _unit_nb(
-        np.asarray(p_ref, dtype=float), np.asarray(q_ref, dtype=bool)
+    d_i = _unit_nb(np.asarray(p_arm, dtype=float), np.asarray(q_arm, dtype=float)) - _unit_nb(
+        np.asarray(p_ref, dtype=float), np.asarray(q_ref, dtype=float)
     )
     n = d_i.size
     obs_diff = float(np.mean(d_i))
@@ -949,7 +949,7 @@ def compute_decision_curve(
     """Vickers & Elkin (2006) Net Benefit curve across a clinical threshold grid tau in (0, 1)."""
     yv = np.asarray(y, dtype=int)
     pv = np.asarray(p_routed, dtype=float)
-    qv = np.asarray(queried_mask, dtype=bool)
+    qv = np.asarray(queried_mask, dtype=float)
     n = float(yv.size)
     n_q = float(np.sum(qv))
     t_list = [float(t) for t in taus]

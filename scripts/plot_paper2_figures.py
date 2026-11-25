@@ -12,7 +12,8 @@ import numpy as np
 
 from collision_zone.three_predicates import bernoulli_kl_from_tau, schervish_collision_weight
 
-RES_DIR = Path(os.environ.get("COLLISION_ZONE_RES_DIR", "/Users/o2satz/antigravity/collision_zone_ed/results"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+RES_DIR = Path(os.environ.get("COLLISION_ZONE_RES_DIR", str(REPO_ROOT / "results")))
 OUT_DIR = Path(os.environ.get("COLLISION_ZONE_OUT_DIR", str(RES_DIR)))
 
 
@@ -137,9 +138,6 @@ def main() -> None:
     plt.savefig(out_png, dpi=200)
     plt.savefig(out_pdf)
     plt.close(fig)
-    art_dir = Path("/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch")
-    if art_dir.exists() and OUT_DIR.resolve() != art_dir.resolve():
-        shutil.copy2(out_png, art_dir / "fig_paper2_three_predicates_ws4tb.png")
     print("Saved 4-panel figure:", out_png)
 
 

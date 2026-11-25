@@ -45,8 +45,8 @@ from collision_zone.three_predicates import (
 
 RAW_DIR = Path("/Volumes/WS4TB/imboreceipt_data")
 PROC_DIR = RAW_DIR / "processed"
-RES_DIR = Path("/Users/o2satz/antigravity/collision_zone_ed/results")
-SCRATCH_DIR = Path("/Users/o2satz/.gemini/antigravity/brain/5be51496-dafb-4e38-a543-75823c062544/scratch")
+REPO_ROOT = Path(__file__).resolve().parents[1]
+RES_DIR = REPO_ROOT / "results"
 
 # Published CMS Medicare Clinical Laboratory Fee Schedule (CPT) relative blood-draw costs
 # Normalized to CPT 83605 (Lactate = 1.00); excludes bedside ventilator settings (FiO2/SaO2/EtCO2)
@@ -900,8 +900,6 @@ def main() -> None:
 
     def _ckpt() -> None:
         out_file.write_text(json.dumps(track_b_summary, indent=2))
-        if SCRATCH_DIR.exists():
-            shutil.copy2(out_file, SCRATCH_DIR / "paper2_track_b_hardened_summary.json")
 
     # B1a: Sepsis 6h Full-Cohort Agniel Noise-Deconfounded Stress Test (92%-unmeasured assays)
     df_a6 = pd.read_parquet(PROC_DIR / "sepsis_setA_bidmc_6h.parquet")
