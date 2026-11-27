@@ -1,4 +1,4 @@
-# Deterministic RNG Seed & Provenance Manifest (`collision-zone-ed` `v2.3.0`)
+# Deterministic RNG Seed & Provenance Manifest (`collision-zone-ed` `v2.3.1`)
 
 ## 1. Algorithmic Provenance (`v1.0` Commit `8c8c4c8` $\to$ `v2.3.0` Commit `5362988`)
 

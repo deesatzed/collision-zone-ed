@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "collision-zone-ed"
-version = "2.3.0"
+version = "2.3.1"
 description = "Collision-Zone Feature Acquisition: Threshold-Aware Discovery and Residual Learning for Clinical Prediction"
 readme = "README.md"
 requires-python = ">=3.11"

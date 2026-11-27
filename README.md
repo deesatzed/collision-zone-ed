@@ -1,15 +1,15 @@
-# `collision-zone-ed` (`v2.3.0` — Unified Beta–KL Threshold Geometry, Panel-Cost Ledger & Multicenter Clinical Suite)
+# `collision-zone-ed` (`v2.3.1` — Unified Beta–KL Threshold Geometry, Panel-Cost Ledger & Multicenter Clinical Suite)
 
 [![Tests](https://img.shields.io/badge/pytest-50%20passing-brightgreen)](tests/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/release-v2.3.0-informational)](https://github.com/deesatzed/collision-zone-ed/releases/tag/v2.3.0)
+[![Version](https://img.shields.io/badge/release-v2.3.1-informational)](https://github.com/deesatzed/collision-zone-ed/releases/tag/v2.3.1)
 
 **Collision-Zone Feature Acquisition: Threshold-Aware Discovery and Residual Learning for Clinical Prediction**
 
 **Author:** Wayne A. Satz, MD (Department of Emergency Medicine, Lewis Katz School of Medicine at Temple University; `satzwa@temple.edu`)
 
 - **Project Landing Page:** [https://deesatzed.github.io/collision-zone-ed/](https://deesatzed.github.io/collision-zone-ed/)
-- **Manuscript PDF (`v2.3.0`, Unsealed Pre-Submission Draft):** [`manuscript/main.pdf`](manuscript/main.pdf)
+- **Manuscript PDF (`v2.3.1`, Unsealed Pre-Submission Draft):** [`manuscript/main.pdf`](manuscript/main.pdf)
 - **Provenance, Seeds & Checkpoints:** [`SEED_MANIFEST.md`](SEED_MANIFEST.md) | [`CITATION.cff`](CITATION.cff) | [`results/v2_3_blocks/`](results/v2_3_blocks/) | [`requirements-lock.txt`](requirements-lock.txt)
 - **Preprint Archival Target:** **Preprints.org**
 
@@ -34,12 +34,12 @@ Building on threshold-tailored Beta proper scoring rules ([Buja, Stuetzle & Shen
 | **Sim 1 (`1,000` reps):** `94%` Subthreshold Dilution | `0.00` | `+0.08` (`8.3%` rec., `8.1%` FWER) | **`+1.64` (`80.5%` rec., `1.0%` FWER)** | **`+1.55` (`[+1.45, +1.66]`, $p = 0.0002$)** |
 | **Sim `6x2` Factorial (`300` reps, `N = 8,000`)** | `0.00` | `+0.02` (`10.7%` rec.) | **`+0.94` (`64.7%` rec.)** | **`+0.16` vs. Direct Fixed-Thresh. Utility (`47.7%` rec., $p = 0.0006$)**; `+0.13` vs. Local Band ($p = 0.0004$) |
 | **Sim `36`-Cell Regime Map (`1,440` runs)** | --- | Slight lead when `gamma_TN = 0` (`-0.07` to `-0.26`) | **Wins `23/24` decoy-present cells** | **`+0.17` to `+3.75/1,000`** once subthreshold decoys compete |
-| **Emory Sepsis B1b (`6h` Summary, `N = 6,463`, `MCID = 1.0`)** | `+3.43` | `+4.70` (`Lactate`, `47.5%` q) | **`+5.77` (`Lactate`, `53.4%` q)** | **`+2.34` vs. Vitals (`[+0.03, +4.63]`, $p = 0.0484$)**; `+1.07` vs. Glob (`[-0.18, +2.32]`, $p = 0.094$); `+3.24` vs. Local Band ($p = 0.0038$); `Escalation-Only VOI` lifts sens. `71.4% -> 76.2%` (`0` missed TPs) |
+| **Emory Sepsis B1b (`6h` Summary, `N = 6,463`, ref. `MCID = 1.0`)** | `+3.43` (`249` TPs, `71.4%` sens.) | `+4.70` (`Lactate`, `47.5%` q) | **`+5.77` (`Lactate`, `53.4%` q)** | **`+2.34` vs. Vitals ($p = 0.0484$)**; directionally favorable `+1.07` vs. Glob (`[-0.18, +2.32]`, $p = 0.094$; spares `645` FPs for `-21` TPs [`65.3%` sens.], while `Escalation-Only VOI` lifts sens. to `76.2%` [`266` TPs]) |
 | **Emory Sepsis B1b (Single-Draw `_last`, `N = 6,463`)** | `+3.43` | `+5.12` (`Lactate_last`, `45.8%` q) | **`+5.02` (`Lactate_last`, `49.0%` q)** | `-0.10` (`[-0.93, +0.72]`, $p = 0.822$): clean parity when a single scalar biomarker acts monotonically |
 | **Emory Sepsis B2 (`4h+2h` Prior Shift, `75%` Holdout `N = 14,755`)** | `-2.76` | --- | `-2.55` zero-shot $\to$ **`+2.36` (`25%` hist. prior)** | Unlabeled Saerens EM collapses (`NB = 0.00`); disjoint `25%` historical prior cuts `ICI: 0.0208 -> 0.0082` |
-| **Yale Campus A $\to$ C (Untested): `ESI 4–5` (`N = 31,430`, `MCID = 0.25`)** | `+2.47` | `+4.70` (`3` mods, `C = 0.030`) | **`+5.20` (`2` mods, `C = 0.021`)** | **`+0.50` (`[+0.19, +0.82]`, $p = 0.0022$)**; `+2.73` vs. Triage ($p = 0.0002$) |
-| **Yale Campus A $\to$ C (Untested): All-Comers (`N = 71,706`, `MCID = 0.40`)** | `103.68` | `108.53` (`43.4%` q) | **`108.77` (`42.4%` q)** | **`+0.23` (`[+0.01, +0.47]`, $p = 0.0412$)**; `+5.08` vs. Triage ($p = 0.0002$) |
-| **Yale Campus A $\to$ B: All-Comers (`N = 166,497`) / `ESI 4–5` (`N = 51,205`)** | `271.06` / `+3.63` | `272.91` / `+5.20` | **`273.29` / `+5.22`** | All-Comers **`+0.39` (`[+0.22, +0.55]`, $p = 0.0002$)**; `ESI 4-5` `+0.03` ($p = 0.828$); `R = 200` `CfBH` burn-in `n >= 250` holds `FDR <= 0.75` |
+| **Yale Campus A $\to$ C (Untested): `ESI 4–5` (`N = 31,430`, ref. `MCID = 0.25`)** | `+2.47` | `+4.70` (`3` mods, `C = 0.030`) | **`+5.20` (`2` mods, `C = 0.021`)** | **`+0.50` (`[+0.19, +0.82]`, $p = 0.0022$)**; `+2.73` vs. Triage ($p = 0.0002$) |
+| **Yale Campus A $\to$ C (Untested): All-Comers (`N = 71,706`, ref. `MCID = 0.40`)** | `103.68` | `108.53` (`43.4%` q) | **`108.77` (`42.4%` q)** | **`+0.23` (`[+0.01, +0.47]`, $p = 0.0412$, below `0.40` ref. MCID)**; `+5.08` vs. Triage ($p = 0.0002$) |
+| **Yale Campus A $\to$ B: All-Comers (`N = 166,497`) / `ESI 4–5` (`N = 51,205`)** | `271.06` / `+3.63` | `272.91` / `+5.20` | **`273.29` / `+5.22`** | All-Comers **`+0.39` (`[+0.22, +0.55]`, $p = 0.0002$)**; `ESI 4-5` `+0.03` ($p = 0.828$); `R = 200` `CfBH` burn-in `n >= 250` keeps `E[FDP] <= 0.75` (`P(FDP > 0.75) = 0.725..0.805` via empty-set bimodality) |
 
 ![Figure 1 — Unified Beta–KL Threshold Geometry & Active-Mass Frontier](results/fig1_unified_geometry_and_frontier.png)
 
