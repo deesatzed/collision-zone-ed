@@ -5,7 +5,7 @@
 \label{tab:tripod_ai}
 \scriptsize
 \renewcommand{\arraystretch}{1.12}
-\begin{tabular}{p{0.10\textwidth}p{0.24\textwidth}p{0.58\textwidth}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.56\textwidth}}
 \toprule
 \textbf{Section / Item} & \textbf{TRIPOD+AI Requirement} & \textbf{Manuscript Location and Compliance Summary} \\
 \midrule
@@ -19,7 +19,7 @@ Predictors (7a--7c) & Baseline vs.\ Stage-2 channels, point-in-time availability
 Sample Size (8) & Cohort sizes, event counts, finite-sample power constraints & Exact $N$ and event counts reported in every table ($349$ external events in Emory Track B1b; $616$ events in Yale Campus C ESI 4--5); split-pilot power loss quantified in Appendix~\ref{app:proofs}. \\
 Missing Data (9) & Missingness rates by site/outcome, handling, ordering confounding & Appendix Table~\ref{tab:missingness_avail} reports per-channel availability across sites and outcomes ($Y=0$ vs.\ $Y=1$), complete-panel subset results, and \texttt{AgnielDeconfounder} / \citet{vonkleist2025evaluation} observability assumptions. \\
 Analytical Methods (10a--10f) & Learner architectures, hyperparameter tuning, OOF stacking, VOI routing & Section~\ref{sec:methods} and Appendix~\ref{app:proofs} specify LightGBM capacities, 3-fold OOF stacking, empirical martingale VOI offset, and disjoint $\mathcal{D}_{\text{train}}/\mathcal{D}_{\text{cal}}/\mathcal{D}_{\text{test}}$ splits. \\
-Fairness / Subgroups (11) & Treatment of sociodemographic attributes and subgroup evaluation & Nine demographic/payer/site variables stripped from fairness-blinded Yale models; $11$ external subgroups audited for Net Benefit (vs.\ Triage and Global-CMI), query rate, sensitivity, false alerts, and \texttt{CITL} (Appendix Table~\ref{tab:fairness}). \\
+Fairness / Subgroups (11) & Treatment of sociodemographic attributes and subgroup evaluation & Nine demographic/payer/site variables stripped from fairness-blinded Yale models; $10$ external subgroups audited for Net Benefit (vs.\ Triage and Global-CMI), query rate, sensitivity, false alerts, and \texttt{CITL} (Appendix Table~\ref{tab:fairness}). \\
 Class Imbalance \& Shift (12) & Handling of low prevalence and cross-site calibration shift & Unweighted canonical Bernoulli likelihood preserved; zero-shot, unlabeled \citet{saerens2002adjusting} EM, chronological split historical prior, and oracle prevalence adjustments compared (Table~\ref{tab:horizons_shift}). \\
 Evaluation Metrics (13a--13c) & Discrimination, calibration, clinical utility, uncertainty intervals & Reports $\operatorname{NB}_{1000}$, $\operatorname{sNB}$, TP/FP/query exchange rates, AUROC, AUPRC, \texttt{CITL}, logistic slope, LOESS \texttt{ICI}, and $B=10{,}000$ paired bootstrap $95\%$ CIs. \\
 Development vs.\ Validation (14--17) & Separation of development, sensitivity, and external transport & Provenance of \texttt{v1.0} (\texttt{8c8c4c8}) through \texttt{v2.3.0} disclosed; untested Yale Campus C ($N=71{,}706$ all-comers; $31{,}430$ ESI 4--5) evaluated zero-shot; encounter-level ID limitation of \citet{hong2018predicting} stated. \\

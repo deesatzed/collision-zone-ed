@@ -2,31 +2,31 @@
   "overall_passed": true,
   "sealed_for_submission": false,
   "mode": "audit",
-  "target_server": "medrxiv",
+  "target_server": "arxiv",
   "manuscript_dir": "/Users/o2satz/antigravity/collision_zone_ed/manuscript",
   "manuscript_file": null,
-  "gate_state_dir": "/Users/o2satz/antigravity/collision_zone_ed/.preprint_gate",
-  "manuscript_sha256": "46029af149089c6b15469fe917f79f0a645697d8f4f11ac7b10e72e2b683bc10",
-  "file_count": 5,
+  "gate_state_dir": "/Users/o2satz/antigravity/collision_zone_ed/manuscript/.preprint_gate",
+  "manuscript_sha256": "1e34f312615f6036539eb48c835ad2b2cf8407e3ad34f4140aac3aababe392cb",
+  "file_count": 10,
   "tracked_files": {
-    "fig_paper2_dual_track_hardened.png": "1083bafdcd983f839f3e8ba9a08921da1ffcb3d2ae93893c14d4425c49f3a524",
-    "fig_paper2_three_predicates_ws4tb.png": "9ac63624647b00fa331589af6d56c1e30f750d165ce9a54d1d3e02e1c93b2540",
-    "main.pdf": "274bf890eb9f63da6559a7eab39c4ba258fd207abe225bed3f74ad791c1f61f1",
-    "main.tex": "40ac565e075b79afaa916b6b07662066ebae0351669d279e486a73fe16abe7df",
-    "references.bib": "1188afcc4f1949ae47e7b9716c84e592f546b8896890f45f5934f3d646e6d94d"
+    "fig1_unified_geometry_and_frontier.png": "76d85d5801644a2279303ffaec440f7c8eb54e9ed2c931a9a1b2903be06df57a",
+    "fig2_synthetic_factorial_and_regime_map.png": "ba9b89fa8d6d4bd6b2a01e9b87e1790a473af85d955a094d0ce52483709e5f41",
+    "fig3_sepsis_ledger_and_factorial.png": "6c3def4e092f051d6fc3dee30e1c6b7a9c75d52376dcbe6c9ea9baaebb66fa45",
+    "fig4_horizons_shift_and_missingness.png": "b5f649af7b7aefa043b42c8abe056707ea68a344b4e3af592e8ef24627fce793",
+    "fig5_yale_campuses_and_cfbh_governance.png": "18d8b71fc26f8faf9fdb40d8a54d8098a741bd8acf993d87561986a4958e1546",
+    "main.bbl": "096e288b6f5a8dfaa2d4d69b8b3e63f7dc2450c4375c99edfe503c57fac1b3a1",
+    "main.pdf": "aff035005af7bd04ab235bed4f9d32873a852f49ea300823588666c898cac1e1",
+    "main.tex": "a1e6cf0c3205ef78107b4dc57475b0376ab9b5c9feb86a0b546c6d7a1d851030",
+    "references.bib": "4d2462822a4d8a04f3a2138abbf80411c3fb7f3f7e0357ea7d5aa1de4df9b39a",
+    "tripod_ai_checklist.tex": "1834c6abdd27baddcf98d95c9ad03a25a10135fdce26fab50f8ec0f45e3f3d8a"
   },
-  "evaluated_at": "2026-11-22T23:36:52.857800+00:00",
+  "evaluated_at": "2026-11-27T20:31:35.263136+00:00",
   "gates": {
     "G1_AI_ATTRIBUTION": {
       "gate": "G1_AI_ATTRIBUTION",
       "passed": true,
       "failures": [],
-      "warnings": [
-        {
-          "code": "UNSPECIFIED_GEMINI_MODEL_VERSION",
-          "detail": "Manuscript mentions 'Gemini' generically without specifying the exact model version (e.g., 'Gemini 4 Argon' or 'Gemini 4 Carbon') recommended for computational reproducibility."
-        }
-      ]
+      "warnings": []
     },
     "G2_SKILL_LICENSES": {
       "gate": "G2_SKILL_LICENSES",
@@ -40,12 +40,17 @@
       "passed": true,
       "citation_summary": {
         "mode": "online",
-        "bib_entry_count": 33,
-        "cited_key_count": 33,
-        "verified_count": 29
+        "bib_entry_count": 41,
+        "cited_key_count": 37,
+        "verified_count": 36
       },
       "failures": [],
       "warnings": [
+        {
+          "code": "NON_ARTICLE_NO_DOI",
+          "key": "buja2005loss",
+          "detail": "Entry 'buja2005loss' (@techreport) has no DOI/PMID/arXiv ID; verify URL/report manually."
+        },
         {
           "code": "NON_ARTICLE_NO_DOI",
           "key": "elkan2001foundations",
@@ -70,7 +75,7 @@
     },
     "G4_SERVER_SCREENING": {
       "gate": "G4_SERVER_SCREENING",
-      "server": "medrxiv",
+      "server": "arxiv",
       "passed": true,
       "failures": [],
       "warnings": []
@@ -87,7 +92,7 @@
       "mode": "audit",
       "passed": true,
       "sealed": false,
-      "gate_state_dir": "/Users/o2satz/antigravity/collision_zone_ed/.preprint_gate",
+      "gate_state_dir": "/Users/o2satz/antigravity/collision_zone_ed/manuscript/.preprint_gate",
       "status": "PASS1_CLEAN_AWAITING_BLIND_REVIEW_AND_REVERIFY",
       "failures": [],
       "warnings": [

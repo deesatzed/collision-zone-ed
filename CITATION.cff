@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use collision-zone-ed in your research, please cite it using the metadata below."
+type: software
+title: "Collision-Zone Feature Acquisition: Threshold-Aware Discovery and Residual Learning for Clinical Prediction"
+version: "2.3.0"
+date-released: "2026-11-27"
+license: MIT
+repository-code: "https://github.com/deesatzed/collision-zone-ed"
+url: "https://deesatzed.github.io/collision-zone-ed/"
+authors:
+  - family-names: "Satz"
+    given-names: "Wayne A."
+    affiliation: "Department of Emergency Medicine, Lewis Katz School of Medicine at Temple University"
+    email: "satzwa@temple.edu"
+keywords:
+  - biomedical informatics methodology
+  - active feature acquisition
+  - proper scoring rules
+  - two-phase stratified sampling
+  - gradient-boosted decision trees
+  - Value of Information
+  - Decision Curve Analysis
+  - calibration
+  - clinical decision support
