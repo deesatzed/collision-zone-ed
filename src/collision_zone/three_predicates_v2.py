@@ -17,10 +17,7 @@ Provides read-only-compatible extensions (zero edits to upstream `collision_zone
 
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass, field
-from pathlib import Path
-
 
 import lightgbm as lgb
 import numpy as np
@@ -40,13 +37,10 @@ from collision_zone.three_predicates import (
     DiscoveryOutcome,
     DiscoveryStepLog,
     FastFrameEncoder,
-    PilotSample,
     apply_platt,
     bernoulli_kl_from_tau,
     cfbh_selection,
-    collision_beta_params,
     collision_zone_relevance_weights,
-    compute_decision_curve,
     empirical_martingale_voi,
     fit_platt_calibrator,
     holm_adjust,
@@ -57,7 +51,6 @@ from collision_zone.three_predicates import (
     schervish_collision_proper_score,
     schervish_collision_weight,
     solve_ess_kappa,
-    solve_martingale_offset,
     two_phase_ht_mean_and_se,
     union_collision_gate,
 )

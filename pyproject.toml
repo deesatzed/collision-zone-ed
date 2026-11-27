@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "collision-zone-ed"
-version = "0.1.0"
-description = "Rescuing Diagnostic Signal from True-Negative Abundance: High-Signal False Positives and Collision-Zone Feature Acquisition"
+version = "2.3.0"
+description = "Collision-Zone Feature Acquisition: Threshold-Aware Discovery and Residual Learning for Clinical Prediction"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -29,3 +29,6 @@ where = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

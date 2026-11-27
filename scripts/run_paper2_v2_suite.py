@@ -1910,7 +1910,7 @@ def main() -> None:
         try:
             results = json.loads(OUT_JSON.read_text())
             print(f"[Resume] Loaded existing keys from {OUT_JSON.name}: {list(results.keys())}")
-        except Exception:
+        except (OSError, json.JSONDecodeError):
             results = {}
 
     def _save() -> None:

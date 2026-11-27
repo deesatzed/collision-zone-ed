@@ -1,0 +1,635 @@
+{
+  "elapsed_sec": 689.29,
+  "f9_landmark_by_horizon_matrix": [
+    {
+      "landmark_hours": 4,
+      "horizon": "next_6h",
+      "n_bidmc": 6344,
+      "events_bidmc": 62,
+      "n_emory": 4591,
+      "events_emory": 29,
+      "prev_emory": 0.0063,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 4,
+      "horizon": "next_12h",
+      "n_bidmc": 6344,
+      "events_bidmc": 108,
+      "n_emory": 4591,
+      "events_emory": 61,
+      "prev_emory": 0.0133,
+      "selected_glob": [
+        "lab_renal_azotemia"
+      ],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 4,
+      "horizon": "remaining_stay",
+      "n_bidmc": 6344,
+      "events_bidmc": 539,
+      "n_emory": 4591,
+      "events_emory": 273,
+      "prev_emory": 0.0595,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 2.5848,
+      "nb_cz": 2.5848,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 6,
+      "horizon": "next_2h",
+      "n_bidmc": 8345,
+      "events_bidmc": 42,
+      "n_emory": 6463,
+      "events_emory": 16,
+      "prev_emory": 0.0025,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 6,
+      "horizon": "next_6h",
+      "n_bidmc": 8345,
+      "events_bidmc": 96,
+      "n_emory": 6463,
+      "events_emory": 36,
+      "prev_emory": 0.0056,
+      "selected_glob": [
+        "lab_ca_mg_phos"
+      ],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 6,
+      "horizon": "next_12h",
+      "n_bidmc": 8345,
+      "events_bidmc": 162,
+      "n_emory": 6463,
+      "events_emory": 78,
+      "prev_emory": 0.0121,
+      "selected_glob": [
+        "lab_blood_gas_acidbase"
+      ],
+      "selected_cz": [],
+      "nb_glob": 0.2624,
+      "nb_cz": 0.2888,
+      "delta_nb": 0.0264,
+      "ci95_low": 0.0029,
+      "ci95_high": 0.0602,
+      "p_two_sided_dh": 0.0004
+    },
+    {
+      "landmark_hours": 6,
+      "horizon": "remaining_stay",
+      "n_bidmc": 8345,
+      "events_bidmc": 711,
+      "n_emory": 6463,
+      "events_emory": 349,
+      "prev_emory": 0.054,
+      "selected_glob": [
+        "lab_lactate"
+      ],
+      "selected_cz": [
+        "lab_lactate"
+      ],
+      "nb_glob": 3.1908,
+      "nb_cz": 5.0376,
+      "delta_nb": 1.8468,
+      "ci95_low": 0.6821,
+      "ci95_high": 3.0965,
+      "p_two_sided_dh": 0.0016
+    },
+    {
+      "landmark_hours": 8,
+      "horizon": "next_2h",
+      "n_bidmc": 10498,
+      "events_bidmc": 50,
+      "n_emory": 8402,
+      "events_emory": 19,
+      "prev_emory": 0.0023,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 8,
+      "horizon": "next_6h",
+      "n_bidmc": 10498,
+      "events_bidmc": 114,
+      "n_emory": 8402,
+      "events_emory": 48,
+      "prev_emory": 0.0057,
+      "selected_glob": [
+        "lab_electrolytes"
+      ],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 8,
+      "horizon": "next_12h",
+      "n_bidmc": 10498,
+      "events_bidmc": 193,
+      "n_emory": 8402,
+      "events_emory": 82,
+      "prev_emory": 0.0098,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": -0.0238,
+      "nb_cz": -0.0238,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 8,
+      "horizon": "remaining_stay",
+      "n_bidmc": 10498,
+      "events_bidmc": 844,
+      "n_emory": 8402,
+      "events_emory": 414,
+      "prev_emory": 0.0493,
+      "selected_glob": [
+        "lab_blood_gas_acidbase"
+      ],
+      "selected_cz": [
+        "lab_lactate"
+      ],
+      "nb_glob": 2.1532,
+      "nb_cz": 3.8799,
+      "delta_nb": 1.7267,
+      "ci95_low": -0.1314,
+      "ci95_high": 3.5983,
+      "p_two_sided_dh": 0.07319
+    },
+    {
+      "landmark_hours": 12,
+      "horizon": "next_2h",
+      "n_bidmc": 14036,
+      "events_bidmc": 64,
+      "n_emory": 11998,
+      "events_emory": 29,
+      "prev_emory": 0.0024,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 12,
+      "horizon": "next_6h",
+      "n_bidmc": 14036,
+      "events_bidmc": 126,
+      "n_emory": 11998,
+      "events_emory": 61,
+      "prev_emory": 0.0051,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 0.0,
+      "nb_cz": 0.0,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 12,
+      "horizon": "next_12h",
+      "n_bidmc": 14036,
+      "events_bidmc": 221,
+      "n_emory": 11998,
+      "events_emory": 90,
+      "prev_emory": 0.0075,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": -0.0111,
+      "nb_cz": -0.0111,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    },
+    {
+      "landmark_hours": 12,
+      "horizon": "remaining_stay",
+      "n_bidmc": 14036,
+      "events_bidmc": 986,
+      "n_emory": 11998,
+      "events_emory": 531,
+      "prev_emory": 0.0443,
+      "selected_glob": [
+        "lab_lactate",
+        "lab_coag_ptt"
+      ],
+      "selected_cz": [],
+      "nb_glob": 2.1091,
+      "nb_cz": -1.3669,
+      "delta_nb": -3.476,
+      "ci95_low": -4.9617,
+      "ci95_high": -1.9342,
+      "p_two_sided_dh": 0.0004
+    }
+  ],
+  "f9_w6h_pre_onset_lead_stratification": {
+    "0_to_2h": {
+      "n_events": 16,
+      "sens_stage1_pct": 68.8,
+      "sens_glob_cmi_pct": 62.5,
+      "sens_cz_fluid_pct": 62.5
+    },
+    "3_to_6h": {
+      "n_events": 20,
+      "sens_stage1_pct": 70.0,
+      "sens_glob_cmi_pct": 70.0,
+      "sens_cz_fluid_pct": 75.0
+    },
+    "7_to_12h": {
+      "n_events": 42,
+      "sens_stage1_pct": 61.9,
+      "sens_glob_cmi_pct": 69.0,
+      "sens_cz_fluid_pct": 71.4
+    },
+    "gt_12h": {
+      "n_events": 271,
+      "sens_stage1_pct": 69.7,
+      "sens_glob_cmi_pct": 63.8,
+      "sens_cz_fluid_pct": 66.8
+    }
+  },
+  "f9_sofa_incorporation_bias_audit": {
+    "no_sofa_score_labs_lactate_allowed": {
+      "n_bidmc": 8345,
+      "events_bidmc": 711,
+      "n_emory": 6463,
+      "events_emory": 349,
+      "prev_emory": 0.054,
+      "selected_glob": [
+        "lab_lactate"
+      ],
+      "selected_cz": [
+        "lab_lactate"
+      ],
+      "nb_glob": 5.119,
+      "nb_cz": 5.0231,
+      "delta_nb": -0.0959,
+      "ci95_low": -0.9005,
+      "ci95_high": 0.7107,
+      "p_two_sided_dh": 0.80744
+    },
+    "no_sofa_and_no_lactate": {
+      "n_bidmc": 8345,
+      "events_bidmc": 711,
+      "n_emory": 6463,
+      "events_emory": 349,
+      "prev_emory": 0.054,
+      "selected_glob": [],
+      "selected_cz": [],
+      "nb_glob": 3.4349,
+      "nb_cz": 3.4349,
+      "delta_nb": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "p_two_sided_dh": 1.0
+    }
+  },
+  "f10_prevalence_shift_taxonomy_b2": {
+    "pi_source_bidmc": 0.06944,
+    "pi_target_true_emory": 0.04143,
+    "pi_saerens_em_unlabeled": 1e-05,
+    "pi_historical_first25pct": 0.03985,
+    "full_cohort_comparison": {
+      "zero_shot_unadjusted": {
+        "pi_target_est": 0.06944,
+        "delta_0_logit": 0.0,
+        "nb_per_1k": -2.755,
+        "query_rate": 0.0,
+        "citl": -0.3978,
+        "ici": 0.0209
+      },
+      "unlabeled_saerens_em": {
+        "pi_target_est": 1e-05,
+        "delta_0_logit": -8.9176,
+        "nb_per_1k": 0.0,
+        "query_rate": 0.0,
+        "citl": 8.5199,
+        "ici": 0.0418
+      },
+      "oracle_target_prevalence_upper_bound": {
+        "pi_target_est": 0.04143,
+        "delta_0_logit": -0.5462,
+        "nb_per_1k": 1.8062,
+        "query_rate": 0.0,
+        "citl": 0.1485,
+        "ici": 0.0067
+      }
+    },
+    "disjoint_75pct_holdout_comparison": {
+      "zero_shot_unadjusted": {
+        "pi_target_est": 0.06944,
+        "delta_0_logit": 0.0,
+        "nb_per_1k": -2.5483,
+        "query_rate": 0.0,
+        "citl": -0.3846,
+        "ici": 0.0208
+      },
+      "unlabeled_saerens_em_on_holdout": {
+        "pi_target_est": 1e-05,
+        "delta_0_logit": -8.9176,
+        "nb_per_1k": 0.0,
+        "query_rate": 0.0,
+        "citl": 8.533,
+        "ici": 0.0423
+      },
+      "historical_first25pct_prior": {
+        "pi_target_est": 0.03985,
+        "delta_0_logit": -0.5866,
+        "nb_per_1k": 2.3585,
+        "query_rate": 0.0,
+        "citl": 0.202,
+        "ici": 0.0082
+      },
+      "oracle_holdout_prevalence": {
+        "pi_target_est": 0.04195,
+        "delta_0_logit": -0.5331,
+        "nb_per_1k": 2.0016,
+        "query_rate": 0.0,
+        "citl": 0.1485,
+        "ici": 0.0072
+      }
+    },
+    "prevalence_misspecification_sweep": [
+      {
+        "error_pp": -1.5,
+        "pi_target_est": 0.02643,
+        "delta_0_logit": -1.0113,
+        "nb_per_1k": 0.6337,
+        "query_rate": 0.0,
+        "citl": 0.6135,
+        "ici": 0.0188
+      },
+      {
+        "error_pp": -1.0,
+        "pi_target_est": 0.03143,
+        "delta_0_logit": -0.8329,
+        "nb_per_1k": 1.5961,
+        "query_rate": 0.0,
+        "citl": 0.4351,
+        "ici": 0.0145
+      },
+      {
+        "error_pp": -0.5,
+        "pi_target_est": 0.03643,
+        "delta_0_logit": -0.6801,
+        "nb_per_1k": 2.2501,
+        "query_rate": 0.0,
+        "citl": 0.2823,
+        "ici": 0.0102
+      },
+      {
+        "error_pp": 0.0,
+        "pi_target_est": 0.04143,
+        "delta_0_logit": -0.5462,
+        "nb_per_1k": 1.8062,
+        "query_rate": 0.0,
+        "citl": 0.1485,
+        "ici": 0.0067
+      },
+      {
+        "error_pp": 0.5,
+        "pi_target_est": 0.04643,
+        "delta_0_logit": -0.4271,
+        "nb_per_1k": 1.5893,
+        "query_rate": 0.0,
+        "citl": 0.0293,
+        "ici": 0.0068
+      },
+      {
+        "error_pp": 1.0,
+        "pi_target_est": 0.05143,
+        "delta_0_logit": -0.3195,
+        "nb_per_1k": 0.4236,
+        "query_rate": 0.0,
+        "citl": -0.0782,
+        "ici": 0.0089
+      },
+      {
+        "error_pp": 1.5,
+        "pi_target_est": 0.05643,
+        "delta_0_logit": -0.2214,
+        "nb_per_1k": 0.2203,
+        "query_rate": 0.0,
+        "citl": -0.1763,
+        "ici": 0.0115
+      },
+      {
+        "error_pp": 2.0,
+        "pi_target_est": 0.06143,
+        "delta_0_logit": -0.1312,
+        "nb_per_1k": -0.5015,
+        "query_rate": 0.0,
+        "citl": -0.2665,
+        "ici": 0.0147
+      }
+    ]
+  },
+  "f11_channel_availability_by_site_and_outcome": [
+    {
+      "channel_id": "lab_lactate",
+      "bidmc_meas_all_pct": 32.2,
+      "bidmc_meas_y0_pct": 30.6,
+      "bidmc_meas_y1_pct": 50.1,
+      "emory_meas_all_pct": 17.0,
+      "emory_meas_y0_pct": 16.0,
+      "emory_meas_y1_pct": 35.2
+    },
+    {
+      "channel_id": "lab_blood_gas_acidbase",
+      "bidmc_meas_all_pct": 99.7,
+      "bidmc_meas_y0_pct": 99.7,
+      "bidmc_meas_y1_pct": 99.7,
+      "emory_meas_all_pct": 21.3,
+      "emory_meas_y0_pct": 20.1,
+      "emory_meas_y1_pct": 42.7
+    },
+    {
+      "channel_id": "lab_wbc",
+      "bidmc_meas_all_pct": 100.0,
+      "bidmc_meas_y0_pct": 100.0,
+      "bidmc_meas_y1_pct": 100.0,
+      "emory_meas_all_pct": 100.0,
+      "emory_meas_y0_pct": 100.0,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_hemoglobin",
+      "bidmc_meas_all_pct": 100.0,
+      "bidmc_meas_y0_pct": 100.0,
+      "bidmc_meas_y1_pct": 100.0,
+      "emory_meas_all_pct": 100.0,
+      "emory_meas_y0_pct": 100.0,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_platelets",
+      "bidmc_meas_all_pct": 99.5,
+      "bidmc_meas_y0_pct": 99.5,
+      "bidmc_meas_y1_pct": 99.4,
+      "emory_meas_all_pct": 99.9,
+      "emory_meas_y0_pct": 99.9,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_renal_azotemia",
+      "bidmc_meas_all_pct": 100.0,
+      "bidmc_meas_y0_pct": 100.0,
+      "bidmc_meas_y1_pct": 100.0,
+      "emory_meas_all_pct": 100.0,
+      "emory_meas_y0_pct": 100.0,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_electrolytes",
+      "bidmc_meas_all_pct": 99.8,
+      "bidmc_meas_y0_pct": 99.9,
+      "bidmc_meas_y1_pct": 99.6,
+      "emory_meas_all_pct": 100.0,
+      "emory_meas_y0_pct": 100.0,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_glucose",
+      "bidmc_meas_all_pct": 99.4,
+      "bidmc_meas_y0_pct": 99.4,
+      "bidmc_meas_y1_pct": 99.6,
+      "emory_meas_all_pct": 100.0,
+      "emory_meas_y0_pct": 100.0,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_ca_mg_phos",
+      "bidmc_meas_all_pct": 80.0,
+      "bidmc_meas_y0_pct": 79.0,
+      "bidmc_meas_y1_pct": 91.6,
+      "emory_meas_all_pct": 100.0,
+      "emory_meas_y0_pct": 100.0,
+      "emory_meas_y1_pct": 100.0
+    },
+    {
+      "channel_id": "lab_liver_enzymes",
+      "bidmc_meas_all_pct": 23.5,
+      "bidmc_meas_y0_pct": 22.7,
+      "bidmc_meas_y1_pct": 32.2,
+      "emory_meas_all_pct": 56.5,
+      "emory_meas_y0_pct": 56.0,
+      "emory_meas_y1_pct": 66.8
+    },
+    {
+      "channel_id": "lab_bilirubin",
+      "bidmc_meas_all_pct": 22.8,
+      "bidmc_meas_y0_pct": 22.0,
+      "bidmc_meas_y1_pct": 30.7,
+      "emory_meas_all_pct": 56.6,
+      "emory_meas_y0_pct": 56.0,
+      "emory_meas_y1_pct": 67.0
+    },
+    {
+      "channel_id": "lab_coag_ptt",
+      "bidmc_meas_all_pct": 78.3,
+      "bidmc_meas_y0_pct": 78.0,
+      "bidmc_meas_y1_pct": 81.4,
+      "emory_meas_all_pct": 29.9,
+      "emory_meas_y0_pct": 28.9,
+      "emory_meas_y1_pct": 46.1
+    },
+    {
+      "channel_id": "lab_fibrinogen",
+      "bidmc_meas_all_pct": 11.7,
+      "bidmc_meas_y0_pct": 11.4,
+      "bidmc_meas_y1_pct": 15.3,
+      "emory_meas_all_pct": 9.4,
+      "emory_meas_y0_pct": 8.8,
+      "emory_meas_y1_pct": 20.1
+    },
+    {
+      "channel_id": "lab_troponin_i",
+      "bidmc_meas_all_pct": 1.6,
+      "bidmc_meas_y0_pct": 1.6,
+      "bidmc_meas_y1_pct": 1.3,
+      "emory_meas_all_pct": 34.6,
+      "emory_meas_y0_pct": 34.5,
+      "emory_meas_y1_pct": 37.5
+    }
+  ],
+  "f11_measurement_count_strata": {
+    "6_to_8_channels": {
+      "n": 2163,
+      "events": 64,
+      "prev_pct": 2.96,
+      "citl_cz": -0.832,
+      "ici_cz": 0.0355
+    },
+    "9_to_14_channels": {
+      "n": 4299,
+      "events": 285,
+      "prev_pct": 6.63,
+      "citl_cz": -0.122,
+      "ici_cz": 0.0083
+    }
+  },
+  "f11_physically_observed_selected_panel_subset": {
+    "selected_cz_channels": [
+      "lab_lactate"
+    ],
+    "n_physically_observed_emory": 1101,
+    "pct_of_emory_cohort": 17.0,
+    "events_observed": 123,
+    "auroc_cz_routed": 0.6272,
+    "auroc_glob_routed": 0.628
+  }
+}

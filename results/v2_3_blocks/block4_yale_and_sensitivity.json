@@ -1,0 +1,885 @@
+{
+  "elapsed_sec": 1515.48,
+  "f13_yale_identifier_disclosure": "In the public Hong et al. (2018) Yale ED repository, pat_mrn_id has 560,486 unique values across 560,486 rows (encounter-level index; longitudinal repeat-visit patient identifiers are unavailable).",
+  "f13_sepsis_9_distinct_hyperparameter_grid": {
+    "point_in_time_last": [
+      {
+        "b_score_bins": 4,
+        "kappa_max": 12.0,
+        "selected_cz": [],
+        "selected_glob": [],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 3.4349,
+        "delta_nb": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "p_two_sided_dh": 1.0,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 4,
+        "kappa_max": 20.0,
+        "selected_cz": [],
+        "selected_glob": [],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 3.4349,
+        "delta_nb": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "p_two_sided_dh": 1.0,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 4,
+        "kappa_max": 32.0,
+        "selected_cz": [
+          "lab_lactate"
+        ],
+        "selected_glob": [],
+        "nb_cz_bagged": 5.0702,
+        "nb_glob_bagged": 3.4349,
+        "delta_nb": 1.6353,
+        "ci95_low": -0.5162,
+        "ci95_high": 3.8154,
+        "p_two_sided_dh": 0.14339,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 8,
+        "kappa_max": 12.0,
+        "selected_cz": [
+          "lab_lactate"
+        ],
+        "selected_glob": [
+          "lab_lactate"
+        ],
+        "nb_cz_bagged": 5.2141,
+        "nb_glob_bagged": 5.119,
+        "delta_nb": 0.0951,
+        "ci95_low": -0.7726,
+        "ci95_high": 0.9891,
+        "p_two_sided_dh": 0.82452,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 8,
+        "kappa_max": 20.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_lactate"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 5.119,
+        "delta_nb": -1.684,
+        "ci95_low": -3.8077,
+        "ci95_high": 0.4373,
+        "p_two_sided_dh": 0.12499,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 8,
+        "kappa_max": 32.0,
+        "selected_cz": [
+          "lab_glucose"
+        ],
+        "selected_glob": [
+          "lab_lactate"
+        ],
+        "nb_cz_bagged": 2.652,
+        "nb_glob_bagged": 5.119,
+        "delta_nb": -2.467,
+        "ci95_low": -4.447,
+        "ci95_high": -0.3747,
+        "p_two_sided_dh": 0.0186,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 12,
+        "kappa_max": 12.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_blood_gas_acidbase"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 5.1184,
+        "delta_nb": -1.6835,
+        "ci95_low": -3.4104,
+        "ci95_high": 0.1618,
+        "p_two_sided_dh": 0.07239,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 12,
+        "kappa_max": 20.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_blood_gas_acidbase"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 5.1184,
+        "delta_nb": -1.6835,
+        "ci95_low": -3.4104,
+        "ci95_high": 0.1618,
+        "p_two_sided_dh": 0.07239,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 12,
+        "kappa_max": 32.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_blood_gas_acidbase"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 5.1184,
+        "delta_nb": -1.6835,
+        "ci95_low": -3.4104,
+        "ci95_high": 0.1618,
+        "p_two_sided_dh": 0.07239,
+        "m_min_160_vs_320_max_diff": 0.0
+      }
+    ],
+    "window_6h_summary": [
+      {
+        "b_score_bins": 4,
+        "kappa_max": 12.0,
+        "selected_cz": [],
+        "selected_glob": [],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 3.4349,
+        "delta_nb": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "p_two_sided_dh": 1.0,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 4,
+        "kappa_max": 20.0,
+        "selected_cz": [],
+        "selected_glob": [],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 3.4349,
+        "delta_nb": 0.0,
+        "ci95_low": 0.0,
+        "ci95_high": 0.0,
+        "p_two_sided_dh": 1.0,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 4,
+        "kappa_max": 32.0,
+        "selected_cz": [
+          "lab_lactate"
+        ],
+        "selected_glob": [],
+        "nb_cz_bagged": 5.8036,
+        "nb_glob_bagged": 3.4349,
+        "delta_nb": 2.3687,
+        "ci95_low": 0.0157,
+        "ci95_high": 4.6869,
+        "p_two_sided_dh": 0.0488,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 8,
+        "kappa_max": 12.0,
+        "selected_cz": [
+          "lab_lactate"
+        ],
+        "selected_glob": [
+          "lab_lactate"
+        ],
+        "nb_cz_bagged": 5.6892,
+        "nb_glob_bagged": 4.7033,
+        "delta_nb": 0.9859,
+        "ci95_low": -0.2795,
+        "ci95_high": 2.2496,
+        "p_two_sided_dh": 0.12459,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 8,
+        "kappa_max": 20.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_lactate"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 4.7033,
+        "delta_nb": -1.2683,
+        "ci95_low": -3.3912,
+        "ci95_high": 0.9593,
+        "p_two_sided_dh": 0.25257,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 8,
+        "kappa_max": 32.0,
+        "selected_cz": [
+          "lab_lactate"
+        ],
+        "selected_glob": [
+          "lab_lactate"
+        ],
+        "nb_cz_bagged": 5.8036,
+        "nb_glob_bagged": 4.7033,
+        "delta_nb": 1.1003,
+        "ci95_low": -0.17,
+        "ci95_high": 2.3626,
+        "p_two_sided_dh": 0.09019,
+        "m_min_160_vs_320_max_diff": 6e-08
+      },
+      {
+        "b_score_bins": 12,
+        "kappa_max": 12.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_blood_gas_acidbase"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 4.279,
+        "delta_nb": -0.8441,
+        "ci95_low": -2.861,
+        "ci95_high": 1.3067,
+        "p_two_sided_dh": 0.42576,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 12,
+        "kappa_max": 20.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_blood_gas_acidbase"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 4.279,
+        "delta_nb": -0.8441,
+        "ci95_low": -2.861,
+        "ci95_high": 1.3067,
+        "p_two_sided_dh": 0.42576,
+        "m_min_160_vs_320_max_diff": 0.0
+      },
+      {
+        "b_score_bins": 12,
+        "kappa_max": 32.0,
+        "selected_cz": [],
+        "selected_glob": [
+          "lab_blood_gas_acidbase"
+        ],
+        "nb_cz_bagged": 3.4349,
+        "nb_glob_bagged": 4.279,
+        "delta_nb": -0.8441,
+        "ci95_low": -2.861,
+        "ci95_high": 1.3067,
+        "p_two_sided_dh": 0.42576,
+        "m_min_160_vs_320_max_diff": 0.0
+      }
+    ]
+  },
+  "f13_yale_cross_campus_esi45": {
+    "campus_b_esi45": {
+      "n_visits": 51205,
+      "events": 927,
+      "prevalence": 0.0181,
+      "selected_glob": [
+        "meds_gi_infectious_other",
+        "meds_neuro_psych_pain",
+        "hie_prior_ed_admissions"
+      ],
+      "panel_cost_glob_cfp": 0.03,
+      "selected_cz": [
+        "meds_gi_infectious_other",
+        "meds_neuro_psych_pain"
+      ],
+      "panel_cost_cz_cfp": 0.021,
+      "mean_beta_cz": 0.1691,
+      "nb_stage1_base": 3.63,
+      "nb_global_cmi": 5.1951,
+      "nb_cz_fluid": 5.2244,
+      "q_rate_global_cmi": 0.6729,
+      "q_rate_cz_fluid": 0.7009,
+      "auroc_cz_fluid": 0.8261,
+      "citl_cz_fluid": -0.8173,
+      "ici_cz_fluid": 0.0167,
+      "boot_cz_vs_global_cmi": {
+        "diff_mean": 0.0293,
+        "se_boot": 0.1409,
+        "ci95_low": -0.2454,
+        "ci95_high": 0.3059,
+        "p_two_sided_dh": 0.82792,
+        "prob_positive": 0.5861,
+        "prob_above_mcid_1_0": 0.0
+      },
+      "boot_cz_vs_stage1_base": {
+        "diff_mean": 1.5943,
+        "se_boot": 0.3145,
+        "ci95_low": 0.9758,
+        "ci95_high": 2.1988,
+        "p_two_sided_dh": 0.0002,
+        "prob_positive": 1.0,
+        "prob_above_mcid_1_0": 0.9706
+      },
+      "unlabeled_saerens_em_recalibrated": {
+        "pi_em_est": 0.23502,
+        "nb_cz_fluid_em": -18.6708,
+        "nb_global_cmi_em": -18.4451,
+        "boot_cz_vs_glob_em": {
+          "diff_mean": -0.2257,
+          "se_boot": 0.028,
+          "ci95_low": -0.2797,
+          "ci95_high": -0.1716,
+          "p_two_sided_dh": 0.0004,
+          "prob_positive": 0.0,
+          "prob_above_mcid_1_0": 0.0
+        }
+      }
+    },
+    "campus_c_esi45_untested": {
+      "n_visits": 31430,
+      "events": 616,
+      "prevalence": 0.0196,
+      "selected_glob": [
+        "meds_gi_infectious_other",
+        "meds_neuro_psych_pain",
+        "hie_prior_ed_admissions"
+      ],
+      "panel_cost_glob_cfp": 0.03,
+      "selected_cz": [
+        "meds_gi_infectious_other",
+        "meds_neuro_psych_pain"
+      ],
+      "panel_cost_cz_cfp": 0.021,
+      "mean_beta_cz": 0.1691,
+      "nb_stage1_base": 2.4711,
+      "nb_global_cmi": 4.7037,
+      "nb_cz_fluid": 5.1994,
+      "q_rate_global_cmi": 0.7285,
+      "q_rate_cz_fluid": 0.7484,
+      "auroc_cz_fluid": 0.8042,
+      "citl_cz_fluid": -0.6568,
+      "ici_cz_fluid": 0.0144,
+      "boot_cz_vs_global_cmi": {
+        "diff_mean": 0.4957,
+        "se_boot": 0.1629,
+        "ci95_low": 0.1866,
+        "ci95_high": 0.8216,
+        "p_two_sided_dh": 0.0022,
+        "prob_positive": 0.999,
+        "prob_above_mcid_1_0": 0.0014
+      },
+      "boot_cz_vs_stage1_base": {
+        "diff_mean": 2.7283,
+        "se_boot": 0.474,
+        "ci95_low": 1.8218,
+        "ci95_high": 3.6861,
+        "p_two_sided_dh": 0.0002,
+        "prob_positive": 1.0,
+        "prob_above_mcid_1_0": 0.9999
+      },
+      "unlabeled_saerens_em_recalibrated": {
+        "pi_em_est": 0.40817,
+        "nb_cz_fluid_em": -20.7579,
+        "nb_global_cmi_em": -20.6731,
+        "boot_cz_vs_glob_em": {
+          "diff_mean": -0.0848,
+          "se_boot": 0.0185,
+          "ci95_low": -0.1212,
+          "ci95_high": -0.0485,
+          "p_two_sided_dh": 0.0004,
+          "prob_positive": 0.0,
+          "prob_above_mcid_1_0": 0.0
+        }
+      }
+    }
+  },
+  "f13_yale_cross_campus_allcomers": {
+    "campus_b_allcomers": {
+      "n_visits": 166497,
+      "events": 52695,
+      "prevalence": 0.31649,
+      "selected_glob": [
+        "meds_gi_infectious_other",
+        "meds_neuro_psych_pain",
+        "hie_prior_ed_admissions"
+      ],
+      "panel_cost_glob_cfp": 0.024,
+      "selected_cz": [
+        "meds_gi_infectious_other",
+        "hie_prior_ed_admissions",
+        "meds_neuro_psych_pain"
+      ],
+      "panel_cost_cz_cfp": 0.024,
+      "mean_beta_cz": 0.4854,
+      "nb_stage1_base": 271.0593,
+      "nb_global_cmi": 272.9077,
+      "nb_cz_fluid": 273.2943,
+      "q_rate_global_cmi": 0.3326,
+      "q_rate_cz_fluid": 0.3235,
+      "auroc_cz_fluid": 0.885,
+      "citl_cz_fluid": 0.0813,
+      "ici_cz_fluid": 0.0126,
+      "boot_cz_vs_global_cmi": {
+        "diff_mean": 0.3866,
+        "se_boot": 0.0831,
+        "ci95_low": 0.2205,
+        "ci95_high": 0.5475,
+        "p_two_sided_dh": 0.0002,
+        "prob_positive": 1.0,
+        "prob_above_mcid_1_0": 0.0
+      },
+      "boot_cz_vs_stage1_base": {
+        "diff_mean": 2.2351,
+        "se_boot": 0.2627,
+        "ci95_low": 1.7223,
+        "ci95_high": 2.7501,
+        "p_two_sided_dh": 0.0002,
+        "prob_positive": 1.0,
+        "prob_above_mcid_1_0": 1.0
+      },
+      "unlabeled_saerens_em_recalibrated": {
+        "pi_em_est": 0.24746,
+        "nb_cz_fluid_em": 271.0075,
+        "nb_global_cmi_em": 270.3007,
+        "boot_cz_vs_glob_em": {
+          "diff_mean": 0.7069,
+          "se_boot": 0.1042,
+          "ci95_low": 0.4988,
+          "ci95_high": 0.9163,
+          "p_two_sided_dh": 0.0004,
+          "prob_positive": 1.0,
+          "prob_above_mcid_1_0": 0.0024
+        }
+      }
+    },
+    "campus_c_allcomers_untested": {
+      "n_visits": 71706,
+      "events": 11198,
+      "prevalence": 0.15617,
+      "selected_glob": [
+        "meds_gi_infectious_other",
+        "meds_neuro_psych_pain",
+        "hie_prior_ed_admissions"
+      ],
+      "panel_cost_glob_cfp": 0.024,
+      "selected_cz": [
+        "meds_gi_infectious_other",
+        "hie_prior_ed_admissions",
+        "meds_neuro_psych_pain"
+      ],
+      "panel_cost_cz_cfp": 0.024,
+      "mean_beta_cz": 0.4854,
+      "nb_stage1_base": 103.6842,
+      "nb_global_cmi": 108.5345,
+      "nb_cz_fluid": 108.766,
+      "q_rate_global_cmi": 0.434,
+      "q_rate_cz_fluid": 0.4239,
+      "auroc_cz_fluid": 0.8588,
+      "citl_cz_fluid": -0.5055,
+      "ici_cz_fluid": 0.0511,
+      "boot_cz_vs_global_cmi": {
+        "diff_mean": 0.2315,
+        "se_boot": 0.1175,
+        "ci95_low": 0.01,
+        "ci95_high": 0.4692,
+        "p_two_sided_dh": 0.0412,
+        "prob_positive": 0.9795,
+        "prob_above_mcid_1_0": 0.0
+      },
+      "boot_cz_vs_stage1_base": {
+        "diff_mean": 5.0818,
+        "se_boot": 0.3606,
+        "ci95_low": 4.3734,
+        "ci95_high": 5.7852,
+        "p_two_sided_dh": 0.0002,
+        "prob_positive": 1.0,
+        "prob_above_mcid_1_0": 1.0
+      },
+      "unlabeled_saerens_em_recalibrated": {
+        "pi_em_est": 1e-05,
+        "nb_cz_fluid_em": 0.0,
+        "nb_global_cmi_em": 0.0,
+        "boot_cz_vs_glob_em": {
+          "diff_mean": 0.0,
+          "se_boot": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0,
+          "p_two_sided_dh": 1.0,
+          "prob_positive": 0.0,
+          "prob_above_mcid_1_0": 0.0
+        }
+      }
+    }
+  },
+  "f15_yale_external_subgroup_utility_and_calibration": [
+    {
+      "attribute": "race",
+      "group": "Black or African American",
+      "n": 30102,
+      "events": 407,
+      "prevalence_pct": 1.35,
+      "q_rate_cz_pct": 69.8,
+      "q_rate_glob_pct": 66.6,
+      "sens_cz_pct": 53.1,
+      "sens_glob_pct": 53.6,
+      "fp_per_1k_cz": 99.8,
+      "fp_per_1k_glob": 99.1,
+      "citl_cz": -0.822,
+      "nb_stage1": 0.577,
+      "nb_glob_cmi": 2.282,
+      "nb_cz_fluid": 2.408,
+      "delta_cz_vs_stage1": 1.8313,
+      "ci95_cz_vs_stage1": [
+        1.0619,
+        2.5773
+      ],
+      "delta_cz_vs_glob_cmi": 0.1265,
+      "ci95_cz_vs_glob_cmi": [
+        -0.1605,
+        0.4174
+      ],
+      "p_cz_vs_glob_cmi": 0.39312
+    },
+    {
+      "attribute": "race",
+      "group": "Other",
+      "n": 11626,
+      "events": 153,
+      "prevalence_pct": 1.32,
+      "q_rate_cz_pct": 71.2,
+      "q_rate_glob_pct": 68.1,
+      "sens_cz_pct": 51.0,
+      "sens_glob_pct": 47.7,
+      "fp_per_1k_cz": 107.9,
+      "fp_per_1k_glob": 108.1,
+      "citl_cz": -0.899,
+      "nb_stage1": 0.502,
+      "nb_glob_cmi": 0.922,
+      "nb_cz_fluid": 1.592,
+      "delta_cz_vs_stage1": 1.0902,
+      "ci95_cz_vs_stage1": [
+        -0.0638,
+        2.2933
+      ],
+      "delta_cz_vs_glob_cmi": 0.6697,
+      "ci95_cz_vs_glob_cmi": [
+        0.1204,
+        1.2678
+      ],
+      "p_cz_vs_glob_cmi": 0.0176
+    },
+    {
+      "attribute": "race",
+      "group": "Patient Refused",
+      "n": 681,
+      "events": 10,
+      "prevalence_pct": 1.47,
+      "q_rate_cz_pct": 69.6,
+      "q_rate_glob_pct": 66.7,
+      "sens_cz_pct": 70.0,
+      "sens_glob_pct": 70.0,
+      "fp_per_1k_cz": 105.7,
+      "fp_per_1k_glob": 104.3,
+      "citl_cz": -0.86,
+      "nb_stage1": 0.979,
+      "nb_glob_cmi": 5.102,
+      "nb_cz_fluid": 5.265,
+      "delta_cz_vs_stage1": 4.2857,
+      "ci95_cz_vs_stage1": [
+        -0.1043,
+        9.9021
+      ],
+      "delta_cz_vs_glob_cmi": 0.1631,
+      "ci95_cz_vs_glob_cmi": [
+        -0.3154,
+        0.6431
+      ],
+      "p_cz_vs_glob_cmi": 0.5087
+    },
+    {
+      "attribute": "race",
+      "group": "White or Caucasian",
+      "n": 39576,
+      "events": 960,
+      "prevalence_pct": 2.43,
+      "q_rate_cz_pct": 73.8,
+      "q_rate_glob_pct": 72.0,
+      "sens_cz_pct": 68.3,
+      "sens_glob_pct": 68.8,
+      "fp_per_1k_cz": 179.5,
+      "fp_per_1k_glob": 178.8,
+      "citl_cz": -0.701,
+      "nb_stage1": 6.023,
+      "nb_glob_cmi": 8.325,
+      "nb_cz_fluid": 8.453,
+      "delta_cz_vs_stage1": 2.4296,
+      "ci95_cz_vs_stage1": [
+        1.6071,
+        3.2926
+      ],
+      "delta_cz_vs_glob_cmi": 0.128,
+      "ci95_cz_vs_glob_cmi": [
+        -0.2012,
+        0.4641
+      ],
+      "p_cz_vs_glob_cmi": 0.43191
+    },
+    {
+      "attribute": "lang",
+      "group": "English",
+      "n": 77915,
+      "events": 1464,
+      "prevalence_pct": 1.88,
+      "q_rate_cz_pct": 71.8,
+      "q_rate_glob_pct": 69.2,
+      "sens_cz_pct": 62.9,
+      "sens_glob_pct": 63.1,
+      "fp_per_1k_cz": 140.0,
+      "fp_per_1k_glob": 139.5,
+      "citl_cz": -0.754,
+      "nb_stage1": 3.296,
+      "nb_glob_cmi": 5.181,
+      "nb_cz_fluid": 5.358,
+      "delta_cz_vs_stage1": 2.0621,
+      "ci95_cz_vs_stage1": [
+        1.5416,
+        2.582
+      ],
+      "delta_cz_vs_glob_cmi": 0.1766,
+      "ci95_cz_vs_glob_cmi": [
+        -0.0409,
+        0.3893
+      ],
+      "p_cz_vs_glob_cmi": 0.10798
+    },
+    {
+      "attribute": "lang",
+      "group": "Other",
+      "n": 4720,
+      "events": 79,
+      "prevalence_pct": 1.67,
+      "q_rate_cz_pct": 74.3,
+      "q_rate_glob_pct": 72.2,
+      "sens_cz_pct": 51.9,
+      "sens_glob_pct": 49.4,
+      "fp_per_1k_cz": 124.4,
+      "fp_per_1k_glob": 125.0,
+      "citl_cz": -0.737,
+      "nb_stage1": 1.43,
+      "nb_glob_cmi": 2.152,
+      "nb_cz_fluid": 2.854,
+      "delta_cz_vs_stage1": 1.4244,
+      "ci95_cz_vs_stage1": [
+        -0.3274,
+        3.2892
+      ],
+      "delta_cz_vs_glob_cmi": 0.7029,
+      "ci95_cz_vs_glob_cmi": [
+        0.1771,
+        1.4025
+      ],
+      "p_cz_vs_glob_cmi": 0.002
+    },
+    {
+      "attribute": "insurance_status",
+      "group": "Commercial",
+      "n": 26937,
+      "events": 515,
+      "prevalence_pct": 1.91,
+      "q_rate_cz_pct": 73.5,
+      "q_rate_glob_pct": 71.1,
+      "sens_cz_pct": 59.6,
+      "sens_glob_pct": 58.8,
+      "fp_per_1k_cz": 141.2,
+      "fp_per_1k_glob": 139.5,
+      "citl_cz": -0.678,
+      "nb_stage1": 3.211,
+      "nb_glob_cmi": 4.548,
+      "nb_cz_fluid": 4.87,
+      "delta_cz_vs_stage1": 1.6587,
+      "ci95_cz_vs_stage1": [
+        0.6839,
+        2.671
+      ],
+      "delta_cz_vs_glob_cmi": 0.322,
+      "ci95_cz_vs_glob_cmi": [
+        -0.0357,
+        0.6655
+      ],
+      "p_cz_vs_glob_cmi": 0.07638
+    },
+    {
+      "attribute": "insurance_status",
+      "group": "Medicaid",
+      "n": 37132,
+      "events": 471,
+      "prevalence_pct": 1.27,
+      "q_rate_cz_pct": 71.2,
+      "q_rate_glob_pct": 68.1,
+      "sens_cz_pct": 56.1,
+      "sens_glob_pct": 55.2,
+      "fp_per_1k_cz": 114.4,
+      "fp_per_1k_glob": 112.4,
+      "citl_cz": -1.037,
+      "nb_stage1": 0.074,
+      "nb_glob_cmi": 1.469,
+      "nb_cz_fluid": 1.72,
+      "delta_cz_vs_stage1": 1.6455,
+      "ci95_cz_vs_stage1": [
+        0.9553,
+        2.3055
+      ],
+      "delta_cz_vs_glob_cmi": 0.251,
+      "ci95_cz_vs_glob_cmi": [
+        -0.0258,
+        0.5269
+      ],
+      "p_cz_vs_glob_cmi": 0.07678
+    },
+    {
+      "attribute": "insurance_status",
+      "group": "Medicare",
+      "n": 10360,
+      "events": 474,
+      "prevalence_pct": 4.58,
+      "q_rate_cz_pct": 73.7,
+      "q_rate_glob_pct": 73.8,
+      "sens_cz_pct": 76.8,
+      "sens_glob_pct": 78.5,
+      "fp_per_1k_cz": 261.7,
+      "fp_per_1k_glob": 272.1,
+      "citl_cz": -0.466,
+      "nb_stage1": 17.346,
+      "nb_glob_cmi": 23.647,
+      "nb_cz_fluid": 23.587,
+      "delta_cz_vs_stage1": 6.2408,
+      "ci95_cz_vs_stage1": [
+        4.2885,
+        8.3118
+      ],
+      "delta_cz_vs_glob_cmi": -0.0601,
+      "ci95_cz_vs_glob_cmi": [
+        -0.9098,
+        0.7161
+      ],
+      "p_cz_vs_glob_cmi": 0.90902
+    },
+    {
+      "attribute": "insurance_status",
+      "group": "Other",
+      "n": 8172,
+      "events": 67,
+      "prevalence_pct": 0.82,
+      "q_rate_cz_pct": 67.3,
+      "q_rate_glob_pct": 64.2,
+      "sens_cz_pct": 37.3,
+      "sens_glob_pct": 37.3,
+      "fp_per_1k_cz": 89.7,
+      "fp_per_1k_glob": 86.8,
+      "citl_cz": -1.067,
+      "nb_stage1": -1.147,
+      "nb_glob_cmi": -1.358,
+      "nb_cz_fluid": -1.267,
+      "delta_cz_vs_stage1": -0.1198,
+      "ci95_cz_vs_stage1": [
+        -1.1426,
+        0.949
+      ],
+      "delta_cz_vs_glob_cmi": 0.0909,
+      "ci95_cz_vs_glob_cmi": [
+        -0.4128,
+        0.595
+      ],
+      "p_cz_vs_glob_cmi": 0.69266
+    }
+  ],
+  "f15_campus_b_cfbh_repeated_burnin_curve": [
+    {
+      "n_burn": 0,
+      "mode": "zero_shot_source_campus_a_cal",
+      "n_reps": 1,
+      "mean_fdp_empirical_fdr": 0.98,
+      "sd_fdp": 0.0,
+      "q95_fdp": 0.98,
+      "prob_fdp_gt_alpha": 1.0,
+      "mean_recall_pct": 99.24,
+      "mean_tp_per_1k": 17.97,
+      "mean_alerts_per_100": 90.01
+    },
+    {
+      "n_burn": 250,
+      "mode": "disjoint_local_campus_b_burnin",
+      "n_eval": 50955,
+      "n_reps": 200,
+      "mean_fdp_empirical_fdr": 0.6403,
+      "sd_fdp": 0.3963,
+      "q025_fdp": 0.0,
+      "q975_fdp": 0.9542,
+      "prob_fdp_gt_alpha": 0.725,
+      "mean_recall_pct": 30.83,
+      "sd_recall_pct": 25.71,
+      "mean_tp_per_1k": 5.58,
+      "mean_alerts_per_100": 6.213
+    },
+    {
+      "n_burn": 500,
+      "mode": "disjoint_local_campus_b_burnin",
+      "n_eval": 50705,
+      "n_reps": 200,
+      "mean_fdp_empirical_fdr": 0.6593,
+      "sd_fdp": 0.3773,
+      "q025_fdp": 0.0,
+      "q975_fdp": 0.9268,
+      "prob_fdp_gt_alpha": 0.755,
+      "mean_recall_pct": 27.69,
+      "sd_recall_pct": 23.81,
+      "mean_tp_per_1k": 5.01,
+      "mean_alerts_per_100": 4.78
+    },
+    {
+      "n_burn": 1000,
+      "mode": "disjoint_local_campus_b_burnin",
+      "n_eval": 50205,
+      "n_reps": 200,
+      "mean_fdp_empirical_fdr": 0.6344,
+      "sd_fdp": 0.3777,
+      "q025_fdp": 0.0,
+      "q975_fdp": 0.9054,
+      "prob_fdp_gt_alpha": 0.74,
+      "mean_recall_pct": 19.21,
+      "sd_recall_pct": 19.36,
+      "mean_tp_per_1k": 3.48,
+      "mean_alerts_per_100": 2.853
+    },
+    {
+      "n_burn": 2000,
+      "mode": "disjoint_local_campus_b_burnin",
+      "n_eval": 49205,
+      "n_reps": 200,
+      "mean_fdp_empirical_fdr": 0.6742,
+      "sd_fdp": 0.3394,
+      "q025_fdp": 0.0,
+      "q975_fdp": 0.8917,
+      "prob_fdp_gt_alpha": 0.775,
+      "mean_recall_pct": 15.85,
+      "sd_recall_pct": 17.31,
+      "mean_tp_per_1k": 2.87,
+      "mean_alerts_per_100": 2.204
+    },
+    {
+      "n_burn": 4000,
+      "mode": "disjoint_local_campus_b_burnin",
+      "n_eval": 47205,
+      "n_reps": 200,
+      "mean_fdp_empirical_fdr": 0.7085,
+      "sd_fdp": 0.3057,
+      "q025_fdp": 0.0,
+      "q975_fdp": 0.8777,
+      "prob_fdp_gt_alpha": 0.805,
+      "mean_recall_pct": 10.47,
+      "sd_recall_pct": 11.1,
+      "mean_tp_per_1k": 1.9,
+      "mean_alerts_per_100": 1.328
+    }
+  ]
+}

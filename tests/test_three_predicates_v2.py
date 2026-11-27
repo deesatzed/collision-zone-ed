@@ -16,25 +16,21 @@ import numpy as np
 import pandas as pd
 from scipy.integrate import quad
 from scipy.special import expit, logit
-from sklearn.metrics import average_precision_score
 
 from collision_zone.three_predicates import (
     AgnielDeconfounder,
     ChannelDef,
     ClinicalContract,
-    FastFrameEncoder,
     PilotSample,
     bernoulli_kl_from_tau,
     cfbh_selection,
     collision_beta_params,
-    collision_zone_relevance_weights,
     compute_decision_curve,
     compute_oof_stage1,
     empirical_martingale_voi,
     evaluate_stage2_multi_test,
     fit_stage1_predictions,
     holm_adjust,
-    log_likelihood_score,
     net_benefit_per_1k,
     run_sequential_discovery,
     sample_pilot,
@@ -628,3 +624,72 @@ def test_26_coherent_single_draw_bagged_ensemble_zero_unpaid_stage2() -> None:
     # Whenever binary venipuncture decision q_bag is False, routed risk MUST equal Stage-1 p1_ens identically
     assert np.array_equal(p_bag[~q_bag], p1_ens[~q_bag])
     assert np.all(q_bag.astype(int) == q_bag)
+
+
+
+# 27
+def test_27_davison_hinkley_two_sided_floor_at_5k_vs_10k() -> None:
+    ct = ClinicalContract(1.0, 15.0, 0.30, 0.03)
+    rng = np.random.default_rng(808)
+    y = rng.binomial(1, 0.08, size=1200)
+    p_good = np.where(y == 1, 0.85, 0.01)
+    p_bad = np.full(1200, 0.08)
+    q = np.zeros(1200, dtype=bool)
+    r5k = paired_bootstrap_nb_diff_v2(y, p_good, q, p_bad, q, ct, n_boot=5000, seed=1)
+    r10k = paired_bootstrap_nb_diff_v2(y, p_good, q, p_bad, q, ct, n_boot=10000, seed=1)
+    assert np.isclose(r5k["p_two_sided_dh"], 2.0 / 5001.0)
+    assert np.isclose(r10k["p_two_sided_dh"], 2.0 / 10001.0)
+
+
+# 28
+def test_28_cfbh_cross_site_intercept_shift_failure_and_alignment_rescue() -> None:
+    from collision_zone.three_predicates import cfbh_selection
+
+    rng = np.random.default_rng(909)
+    n_cal, n_te = 4000, 4000
+    x_cal = rng.normal(0.0, 1.0, size=n_cal)
+    y_cal = rng.binomial(1, expit(-3.8 + 1.1 * x_cal))
+    p_cal = expit(-3.8 + 1.1 * x_cal)
+
+    # Target campus has shifted covariates (+1.0) AND stricter admission intercept (-5.6 -> CITL < -0.7)
+    x_te = rng.normal(0.9, 1.0, size=n_te)
+    y_te = rng.binomial(1, expit(-5.6 + 1.1 * x_te))
+    p_te_raw = expit(-3.8 + 1.1 * x_te)
+
+    cf_raw = cfbh_selection(y_cal, p_cal, y_te, p_te_raw, fdr_target=0.75, seed=7)
+    raw_rate = cf_raw["n_selected"] / float(n_te)
+    assert raw_rate > 0.50 and cf_raw["fdp"] > 0.90
+
+    # Align target marginal mean risk to target marginal prevalence (0 individual target labels used)
+    p_te_aligned, _ = prior_odds_recalibrate_probabilities(
+        p_te_raw, float(np.mean(p_te_raw)), float(np.mean(y_te))
+    )
+    p_cal_aligned, _ = prior_odds_recalibrate_probabilities(
+        p_cal, float(np.mean(y_cal)), float(np.mean(y_te))
+    )
+    cf_aligned = cfbh_selection(y_cal, p_cal_aligned, y_te, p_te_aligned, fdr_target=0.75, seed=7)
+    aligned_rate = cf_aligned["n_selected"] / float(n_te)
+    assert aligned_rate < 0.15
+
+
+# 29
+def test_29_clinical_exchange_rate_identity_matches_net_benefit() -> None:
+    tau = 0.0625
+    ct = ClinicalContract(cost_fp=1.0, cost_fn=15.0, target_precision=0.30, per_instance_query_cost=0.03)
+    y = np.array([1, 0, 0, 1, 0, 0, 0, 0], dtype=int)
+    p_cz = np.array([0.20, 0.04, 0.08, 0.05, 0.02, 0.09, 0.01, 0.03])
+    q_cz = np.array([1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])
+    p_gl = np.array([0.20, 0.09, 0.08, 0.07, 0.02, 0.09, 0.07, 0.03])
+    q_gl = np.array([1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+    nb_cz = net_benefit_per_1k(y, p_cz, q_cz, ct)
+    nb_gl = net_benefit_per_1k(y, p_gl, q_gl, ct)
+    tp_cz = 1000.0 * float(np.mean((p_cz >= tau) & (y == 1)))
+    fp_cz = 1000.0 * float(np.mean((p_cz >= tau) & (y == 0)))
+    tp_gl = 1000.0 * float(np.mean((p_gl >= tau) & (y == 1)))
+    fp_gl = 1000.0 * float(np.mean((p_gl >= tau) & (y == 0)))
+    alerts_spared = fp_gl - fp_cz
+    delta_tp = tp_cz - tp_gl
+    delta_q = 1000.0 * (float(np.mean(q_cz)) - float(np.mean(q_gl)))
+    reconstructed_dnb = delta_tp + (tau / (1.0 - tau)) * alerts_spared - (ct.per_instance_query_cost / ct.cost_fn) * delta_q
+    assert np.isclose(nb_cz - nb_gl, reconstructed_dnb, atol=1e-12)
