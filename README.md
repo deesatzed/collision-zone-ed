@@ -9,7 +9,7 @@
 **Author:** Wayne A. Satz, MD (Department of Emergency Medicine, Lewis Katz School of Medicine at Temple University; `satzwa@temple.edu`)
 
 - **Project Landing Page:** [https://deesatzed.github.io/collision-zone-ed/](https://deesatzed.github.io/collision-zone-ed/)
-- **Manuscript PDF (`v2.3.1`, Unsealed Pre-Submission Draft):** [`manuscript/main.pdf`](manuscript/main.pdf)
+- **Manuscript PDF (`v2.3.1`, `SEALED_FOR_SUBMISSION`, Seal ID `c179a57d117f3d8b6c68e8ee`):** [`manuscript/main.pdf`](manuscript/main.pdf)
 - **Provenance, Seeds & Checkpoints:** [`SEED_MANIFEST.md`](SEED_MANIFEST.md) | [`CITATION.cff`](CITATION.cff) | [`results/v2_3_blocks/`](results/v2_3_blocks/) | [`requirements-lock.txt`](requirements-lock.txt)
 - **Preprint Archival Target:** **Preprints.org**
 

@@ -1,0 +1,43 @@
+{
+  "auditor": "preprint-blind-auditor",
+  "target_server": "arxiv",
+  "verdict": "PASS",
+  "summary": "Cold blind screening audit of Collision-Zone Feature Acquisition (v2.3.1) for arXiv (and archival target Preprints.org) passes all five hard compliance gates with zero blockers. Sole human authorship (Wayne A. Satz, MD), COPE-compliant AI-assisted workflow and Google Antigravity for Science attribution, IRB/45 CFR 46.102(e) secondary-data governance, open MIT reproducibility artifacts, bibliographic metadata, and hedged observational claims (including p_DH = 0.094 sepsis uncertainty, 5/9 joint hyperparameter grid cells, and two-sided VOI sensitivity trade-offs) are verified across all LaTeX, BibTeX, figure, and compiled PDF sources.",
+  "blockers": [],
+  "warnings": [
+    {
+      "id": "W1",
+      "category": "INTERNAL_COHERENCE",
+      "location": "main.tex:L48",
+      "detail": "In the Abstract, '(N=71,706)' immediately precedes both Campus C low-acuity visits (where N=31,430 in main.tex:L138 and Table 5) and Campus C all-comers (N=71,706); consider clarifying in future revisions so skimming readers do not attribute N=71,706 to the low-acuity subset."
+    },
+    {
+      "id": "W2",
+      "category": "INTERNAL_COHERENCE",
+      "location": "main.tex:L269",
+      "detail": "Figure 3A plots single-split Channel-Billed AFA Net Benefit (+1.39 / +1.40) on its bottom bar group without a '(Per-Split)' axis label, whereas Table 2 (main.tex:L229) reports both majority-mask ensemble (+3.43 / +3.39) and per-split (+1.40 / +1.39) values (explained in main.tex:L210)."
+    },
+    {
+      "id": "W3",
+      "category": "SERVER_SCREENING",
+      "location": "main.tex:L375",
+      "detail": "Data and Code Availability refers to 'repo commit main' (a branch reference) alongside immutable tag 'Release v2.3.1' and computational code commit '5362988', while root requirements-lock.txt:L2 pins an earlier editable package commit (3ce7d6e)."
+    }
+  ],
+  "checked_files": [
+    "fig1_unified_geometry_and_frontier.png",
+    "fig2_synthetic_factorial_and_regime_map.png",
+    "fig3_sepsis_ledger_and_factorial.png",
+    "fig4_horizons_shift_and_missingness.png",
+    "fig5_yale_campuses_and_cfbh_governance.png",
+    "main.bbl",
+    "main.pdf",
+    "main.tex",
+    "references.bib",
+    "tripod_ai_checklist.tex"
+  ],
+  "manuscript_file": null,
+  "manuscript_sha256": "b890e4a6aa3f17befb5571a77b4eb6945dc30dd81b8a9a3786cb9c1a0aa24aa8",
+  "file_count": 10,
+  "recorded_at": "2026-11-27T22:17:21.033830+00:00"
+}
